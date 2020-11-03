@@ -1,6 +1,3 @@
-use std::fs::File;
-use std::io::{self, BufRead};
-use std::path::Path;
 
 pub fn run() {
     part_1();
@@ -14,48 +11,40 @@ pub fn run() {
 // (your puzzle input), then add together all the fuel values.
 fn part_1() {
     let mut sum = 0;
-    if let Ok(lines) = read_lines("./input/2019-d01-input1.txt") {
+    if let Ok(lines) = super::read_lines("./input/2019-d01-input1.txt") {
         for line in lines {
             if let Ok(item) = line {
-                let v = item.parse::<i64>().unwrap();
+                let v = item.parse::<i32>().unwrap();
                 let fuel = calculate_fuel(v);
                 sum += fuel;
             }
         }
     }
-    println!("Part 1 answer: {0}", sum);
+    println!("** Part 1 Final: {0}", sum);
 }
 
 fn part_2() {
     let mut sum = 0;
-    if let Ok(lines) = read_lines("./input/2019-d01-input1.txt") {
+    if let Ok(lines) = super::read_lines("./input/2019-d01-input1.txt") {
         for line in lines {
             if let Ok(item) = line {
-                let v = item.parse::<i64>().unwrap();
+                let v = item.parse::<i32>().unwrap();
                 let fuel = calculate_fuel(v);
                 sum += add_additional_fuel(fuel);
             }
         }
     }
-    println!("Part 2 answer: {0}", sum);
-}
-
-// The output is wrapped in a Result to allow matching on errors
-// Returns an Iterator to the Reader of the lines of the file.
-fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
-where P: AsRef<Path>, {
-    let file = File::open(filename)?;
-    Ok(io::BufReader::new(file).lines())
+    println!("** Part 2 Final: {0}", sum);
 }
 
 // Fuel required to launch a given module is based on its mass. 
-fn calculate_fuel(mass: i64) -> i64 {
+fn calculate_fuel(mass: i32) -> i32 {
     // Specifically, to find the fuel required for a module, take its mass, 
     // divide by three, round down, and subtract 2.
     (mass / 3) - 2
 }
 
-fn add_additional_fuel(fuel: i64) -> i64 {
+fn add_additional_fuel(fuel: i32) -> i32 {
     let mut sum = 0;
     let mut result = Some(fuel);
 
