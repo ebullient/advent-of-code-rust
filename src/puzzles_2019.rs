@@ -7,6 +7,7 @@ mod compute;
 mod day_01;
 mod day_02;
 mod day_03;
+mod day_04;
 
 // The output is wrapped in a Result to allow matching on errors
 // Returns an Iterator to the Reader of the lines of the file.
@@ -40,6 +41,7 @@ pub fn run(day: i32) {
         1 => day_01::run(),
         2 => day_02::run(),
         3 => day_03::run(),
+        4 => day_04::run(),
         // Handle the rest of cases
         _ => println!("Nothing to see here"),
     }
