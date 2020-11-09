@@ -1,4 +1,10 @@
-use std::io;
+// use std::io;
+
+#[derive(Debug)]
+pub struct ProgramIO {
+    pub input: i32,
+    pub output: i32
+}
 
 // A tuple struct
 struct Modes(i32, i32, i32);
@@ -65,40 +71,156 @@ fn opcode_2(modes: Modes, i: usize, codes: &mut Vec<i32>) -> usize {
     i+4 // advance 4: 1 opcode + 3 parameters
 }
 
-fn opcode_3(_modes: Modes, i: usize, codes: &mut Vec<i32>) -> usize {
+fn opcode_3(_modes: Modes, i: usize, codes: &mut Vec<i32>, io: &mut ProgramIO) -> usize {
     // Opcode 3 takes a single integer as input and saves it to the 
     // position given by its only parameter. 
-    let mut input = String::new();
-    println!(">>");
-    match io::stdin().read_line(&mut input) {
-        Ok(n) => {
-            println!("read {} bytes: {}", n, input);
-        }
-        Err(error) => {
-            panic!("error: {}", error);
-        }
-    }
 
     let ix: usize = codes[i+1] as usize;
-    codes[ix] = input.trim().parse::<i32>().unwrap();
+    codes[ix] = io.input;
 
+    // let mut input = String::new();
+    // println!(">>");
+    // match io::stdin().read_line(&mut input) {
+    //     Ok(n) => {
+    //         println!("read {} bytes: {}", n, input);
+    //     }
+    //     Err(error) => {
+    //         panic!("error: {}", error);
+    //     }
+    // }
+    // codes[ix] = input.trim().parse::<i32>().unwrap();
+ 
     i+2 // advance 2: 1 opcode + 1 parameter
 }
 
-fn opcode_4(modes: Modes, i: usize, codes: &mut Vec<i32>) -> usize {
+fn opcode_4(modes: Modes, i: usize, codes: &mut Vec<i32>, io: &mut ProgramIO) -> usize {
     // Opcode 4 outputs the value of its only parameter. 
     // For example, the instruction 4,50 would output the value at address 50.
     if modes.2 == 0 { // position mode
         let ix: usize = codes[i+1] as usize;
         println!("{}", codes[ix]);
+        io.output = codes[ix];
     } else { // immediate mode
         println!("{}", codes[i+1]);
+        io.output = codes[i+1];
     };
 
     i+2 // advance 2: 1 opcode + 1 parameter
 }
 
-pub fn run(codes: &mut Vec<i32>) {
+fn opcode_5(modes: Modes, i: usize, codes: &mut Vec<i32>) -> usize {
+    // Opcode 5 is jump-if-true: if the first parameter is non-zero, 
+    // it sets the instruction pointer to the value from the second parameter. 
+    // Otherwise, it does nothing.
+    let x = 
+        if modes.2 == 0 { // position mode
+            let ix: usize = codes[i+1] as usize;
+            codes[ix]
+        } else { // immediate mode
+            codes[i+1]
+        };
+    let y =
+        if modes.1 == 0 { // position mode
+            let iy: usize = codes[i+2] as usize;
+            codes[iy]
+        } else { // immediate mode
+            codes[i+2]
+        };
+
+    if x != 0 {
+        y as usize
+    } else {
+        i+3 // advance 3: 1 opcode + 2 parameters
+    }
+}
+
+fn opcode_6(modes: Modes, i: usize, codes: &mut Vec<i32>) -> usize {
+    // Opcode 6 is jump-if-false: if the first parameter is zero, 
+    // it sets the instruction pointer to the value from the second parameter. 
+    // Otherwise, it does nothing.
+    let x = 
+    if modes.2 == 0 { // position mode
+        let ix: usize = codes[i+1] as usize;
+        codes[ix]
+    } else { // immediate mode
+        codes[i+1]
+    };
+    let y =
+        if modes.1 == 0 { // position mode
+            let iy: usize = codes[i+2] as usize;
+            codes[iy]
+        } else { // immediate mode
+            codes[i+2]
+        };
+
+    if x == 0 {
+        y as usize
+    } else {
+        i+3 // advance 3: 1 opcode + 2 parameters
+    }
+}
+
+fn opcode_7(modes: Modes, i: usize, codes: &mut Vec<i32>) -> usize {
+    // Opcode 7 is less than: if the first parameter is less than the second parameter, 
+    // it stores 1 in the position given by the third parameter. Otherwise, it stores 0.
+    let x = 
+        if modes.2 == 0 { // position mode
+            let ix: usize = codes[i+1] as usize;
+            codes[ix]
+        } else { // immediate mode
+            codes[i+1]
+        };
+    let y =
+        if modes.1 == 0 { // position mode
+            let iy: usize = codes[i+2] as usize;
+            codes[iy]
+        } else { // immediate mode
+            codes[i+2]
+        };
+
+    let iz: usize = codes[i+3] as usize; // always position mode
+
+    codes[iz] = 
+        if x < y {
+            1
+        } else {
+            0
+        };
+
+    i+4 // advance 4: 1 opcode + 3 parameters
+}
+
+fn opcode_8(modes: Modes, i: usize, codes: &mut Vec<i32>) -> usize {
+    // Opcode 8 is equals: if the first parameter is equal to the second parameter, 
+    // it stores 1 in the position given by the third parameter. Otherwise, it stores 0.
+    let x = 
+        if modes.2 == 0 { // position mode
+            let ix: usize = codes[i+1] as usize;
+            codes[ix]
+        } else { // immediate mode
+            codes[i+1]
+        };
+    let y =
+        if modes.1 == 0 { // position mode
+            let iy: usize = codes[i+2] as usize;
+            codes[iy]
+        } else { // immediate mode
+            codes[i+2]
+        };
+
+    let iz: usize = codes[i+3] as usize; // always position mode
+
+    codes[iz] = 
+        if x == y {
+            1
+        } else {
+            0
+        };
+
+    i+4 // advance 4: 1 opcode + 3 parameters
+}
+
+pub fn run(codes: &mut Vec<i32>, io: &mut ProgramIO) {
     let mut i: usize = 0;
     //let mut 
     loop {
@@ -107,8 +229,12 @@ pub fn run(codes: &mut Vec<i32>) {
         match op {
             1 => { i = opcode_1(modes, i, codes) },
             2 => { i = opcode_2(modes, i, codes) },
-            3 => { i = opcode_3(modes, i, codes) },
-            4 => { i = opcode_4(modes, i, codes) },
+            3 => { i = opcode_3(modes, i, codes, io) },
+            4 => { i = opcode_4(modes, i, codes, io) },
+            5 => { i = opcode_5(modes, i, codes) },
+            6 => { i = opcode_6(modes, i, codes) },
+            7 => { i = opcode_7(modes, i, codes) },
+            8 => { i = opcode_8(modes, i, codes) },
             99 => { 
                 break; 
             },
@@ -125,21 +251,23 @@ mod tests {
     use super::*;
     use itertools::Itertools;
 
-    fn intcode_program(input_ref: &str) -> String {
+    fn intcode_program(input_ref: &str, io: &mut ProgramIO) -> String {
         let mut codes: Vec<i32> = input_ref.split(',')
-                                           .map(|x| x.parse::<i32>().unwrap())
+                                           .map(|x| x.trim().parse::<i32>().unwrap())
                                            .collect();
-        run(&mut codes);
+        run(&mut codes, io);
         codes.iter().join(",")
     }
 
     #[test]
     fn test_intcode_program() {
-        assert_eq!(intcode_program("1,0,0,0,99"), "2,0,0,0,99");
-        assert_eq!(intcode_program("2,3,0,3,99"), "2,3,0,6,99");
-        assert_eq!(intcode_program("2,4,4,5,99,0"), "2,4,4,5,99,9801");
-        assert_eq!(intcode_program("1,1,1,4,99,5,6,0,99"), "30,1,1,4,2,5,6,0,99");
-        assert_eq!(intcode_program("1,9,10,3,2,3,11,0,99,30,40,50"), "3500,9,10,70,2,3,11,0,99,30,40,50");
+        let mut io = ProgramIO{input: 0, output: 0};
+
+        assert_eq!(intcode_program("1,0,0,0,99", &mut io), "2,0,0,0,99");
+        assert_eq!(intcode_program("2,3,0,3,99", &mut io), "2,3,0,6,99");
+        assert_eq!(intcode_program("2,4,4,5,99,0", &mut io), "2,4,4,5,99,9801");
+        assert_eq!(intcode_program("1,1,1,4,99,5,6,0,99", &mut io), "30,1,1,4,2,5,6,0,99");
+        assert_eq!(intcode_program("1,9,10,3,2,3,11,0,99,30,40,50", &mut io), "3500,9,10,70,2,3,11,0,99,30,40,50");
     }
 
     #[test]
@@ -158,5 +286,92 @@ mod tests {
         assert_eq!(modes.1, 1);
         assert_eq!(modes.2, 0);
         assert_eq!(op, 02);
+    }
+
+    #[test]
+    fn test_equal_to() {
+        let mut io = ProgramIO{input: 0, output: 0};
+
+        intcode_program("3,9,8,9,10,9,4,9,99,-1,8", &mut io);
+        assert_eq!(io.output, 0);
+
+        io.input = 8;
+        intcode_program("3,9,8,9,10,9,4,9,99,-1,8", &mut io);
+        assert_eq!(io.output, 1);
+    }
+
+    #[test]
+    fn test_less_than() {
+        let mut io = ProgramIO{input: 0, output: 0};
+
+        intcode_program("3,9,7,9,10,9,4,9,99,-1,8", &mut io);
+        assert_eq!(io.output, 1);
+
+        io.input = 8;
+        intcode_program("3,9,7,9,10,9,4,9,99,-1,8", &mut io);
+        assert_eq!(io.output, 0);
+    }
+
+    #[test]
+    fn test_equal_to_immediate() {
+        let mut io = ProgramIO{input: 0, output: 0};
+        intcode_program("3,3,1108,-1,8,3,4,3,99", &mut io);
+        assert_eq!(io.output, 0);
+
+        io.input = 8;
+        intcode_program("3,3,1108,-1,8,3,4,3,99", &mut io);
+        assert_eq!(io.output, 1);
+    }
+
+    #[test]
+    fn test_less_than_immediate() {
+        let mut io = ProgramIO{input: 0, output: 0};
+        intcode_program("3,3,1107,-1,8,3,4,3,99", &mut io);
+        assert_eq!(io.output, 1);
+
+        io.input = 8;
+        intcode_program("3,3,1107,-1,8,3,4,3,99", &mut io);
+        assert_eq!(io.output, 0);
+    }
+
+    #[test]
+    fn test_jump_to_position() {
+        let mut io = ProgramIO{input: 0, output: 0};
+        intcode_program("3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9", &mut io);
+        assert_eq!(io.output, 0);
+
+        io.input = 8;
+        intcode_program("3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9", &mut io);
+        assert_eq!(io.output, 1);
+    }
+
+    #[test]
+    fn test_jump_to_immediate() {
+        let mut io = ProgramIO{input: 0, output: 0};
+        intcode_program("3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9", &mut io);
+        assert_eq!(io.output, 0);
+
+        io.input = 8;
+        intcode_program("3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9", &mut io);
+        assert_eq!(io.output, 1);
+    }
+
+    #[test]
+    fn test_larger_example() {
+        let instr = "3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,
+        1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,
+        999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99";
+
+        let mut io = ProgramIO{input: 0, output: 0};
+        intcode_program(instr, &mut io);
+        assert_eq!(io.output, 999);
+
+        io.input = 8;
+        intcode_program(instr, &mut io);
+        assert_eq!(io.output, 1000);
+
+        io.input = 18;
+        intcode_program(instr, &mut io);
+        assert_eq!(io.output, 1001);
     }
 }
