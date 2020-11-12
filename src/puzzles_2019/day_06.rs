@@ -1,19 +1,18 @@
-use petgraph::Direction;
-use petgraph::graphmap::DiGraphMap;
-use petgraph::visit::depth_first_search;
-use petgraph::visit::DfsEvent;
+use petgraph::graphmap::UnGraphMap;
 use petgraph::algo::dijkstra;
+use petgraph::algo::astar;
 
 pub fn run() {
     if let Ok(input) = super::read_string("./input/2019-d06-input1.txt") {
         let g = parse_input(&input);
         println!("** Part 1 Final: {:?}", chksum_orbits(&g));
+        println!("** Part 1 Final: {:?}", count_transfers(&g));
     }
 }
 
-fn parse_input(input_ref: &str) -> DiGraphMap<&str, i32> {
-    let mut graph = DiGraphMap::new();
-    let origin = graph.add_node("COM");
+fn parse_input(input_ref: &str) -> UnGraphMap<&str, i32> {
+    let mut graph = UnGraphMap::new();
+    graph.add_node("COM");
 
     for entry in input_ref.split_whitespace() {
         let v: Vec<&str> = entry.split(')').collect();
@@ -22,11 +21,17 @@ fn parse_input(input_ref: &str) -> DiGraphMap<&str, i32> {
     graph
 }
 
-fn chksum_orbits(graph: &DiGraphMap<&str, i32>) -> i32 {
+fn chksum_orbits(graph: &UnGraphMap<&str, i32>) -> i32 {
     let res = dijkstra(&graph, "COM", None, |_| 1);
     let mut i = 0;
-    res.iter().for_each(|(k, v)| i += v);
+    res.iter().for_each(|(_, v)| i += v);
     i
+}
+
+fn count_transfers(graph: &UnGraphMap<&str, i32>) -> i32 {
+    let path = astar(&graph, "YOU", |finish| finish == "SAN", |_| 1, |_| 0);
+    println!("{:?}", path);
+    path.unwrap().0 - 2
 }
 
 #[cfg(test)]
@@ -51,5 +56,27 @@ mod tests {
         println!("{:?}", g);
 
         assert_eq!(chksum_orbits(&g), 42);
+    }
+
+    #[test]
+    fn test_orbit_transfers() {
+        let input = "COM)B
+        B)C
+        C)D
+        D)E
+        E)F
+        B)G
+        G)H
+        D)I
+        E)J
+        J)K
+        K)L
+        K)YOU
+        I)SAN";
+
+        let g = parse_input(input);
+        println!("{:?}", g);
+
+        assert_eq!(count_transfers(&g), 4);
     }
 }
