@@ -1,9 +1,10 @@
 use std::cmp;
 use std::hash;
 use std::collections::HashSet;
+use crate::puzzle_input;
 
 pub fn run() {
-    let input = super::read_all_lines("./input/2019-d03-input1.txt");
+    let input = puzzle_input::read_all_lines("./input/2019-d03-input1.txt");
     let path1 = compute_path(&input[0]);
     let path2 = compute_path(&input[1]);
 

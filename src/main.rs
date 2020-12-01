@@ -1,9 +1,10 @@
 mod puzzles_2019;
+mod puzzles_2020;
+mod puzzle_input;
 
 extern crate getopts;
 use getopts::Options;
 use std::env;
-
 
 fn print_usage(program: &str, opts: Options) {
     let brief = format!("Usage: {} -y 2019 -d 1", program);
@@ -29,7 +30,7 @@ fn main() {
     }
     let year = match matches.opt_str("y") {
         Some(s) => s.parse::<i32>().unwrap(),
-        None => 2019,
+        None => 2020,
     };
     let day = match matches.opt_str("d") {
         Some(s) => s.parse::<i32>().unwrap(),
@@ -39,6 +40,7 @@ fn main() {
     println!("{}", format!("Running {0}:day_{1:02}", year, day));
     match year {
         2019 => puzzles_2019::run(day),
+        2020 => puzzles_2020::run(day),
         // Handle the rest of cases
         _ => println!("Nothing to see here"),
     }
