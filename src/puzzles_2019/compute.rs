@@ -13,9 +13,9 @@ impl ProgramIO {
         }
     }
 
-    pub fn add_input(&mut self, value: i32) {
-        self.input.push(value);
-    }
+    // pub fn add_input(&mut self, value: i32) {
+    //     self.input.push(value);
+    // }
 
     pub fn take_input(&mut self) -> i32 {
         self.input.remove(0)
