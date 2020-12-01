@@ -1,3 +1,4 @@
+use crate::puzzle_input;
 
 pub fn run() {
     part_1();
@@ -11,7 +12,7 @@ pub fn run() {
 // (your puzzle input), then add together all the fuel values.
 fn part_1() {
     let mut sum = 0;
-    if let Ok(lines) = super::read_lines("./input/2019-d01-input1.txt") {
+    if let Ok(lines) = puzzle_input::read_lines("./input/2019-d01-input1.txt") {
         for line in lines {
             if let Ok(item) = line {
                 let v = item.parse::<i32>().unwrap();
@@ -25,7 +26,7 @@ fn part_1() {
 
 fn part_2() {
     let mut sum = 0;
-    if let Ok(lines) = super::read_lines("./input/2019-d01-input1.txt") {
+    if let Ok(lines) = puzzle_input::read_lines("./input/2019-d01-input1.txt") {
         for line in lines {
             if let Ok(item) = line {
                 let v = item.parse::<i32>().unwrap();

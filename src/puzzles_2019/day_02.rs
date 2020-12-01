@@ -1,4 +1,5 @@
 use super::compute;
+use crate::puzzle_input;
 
 pub fn run() {
     part_1();
@@ -6,7 +7,7 @@ pub fn run() {
 }
 
 fn run_program(input: &str, noun: i32, verb: i32) -> i32 {
-    let mut io = compute::ProgramIO{input: 0, output: 0};
+    let mut io = compute::ProgramIO::new(vec![0]);
 
     let trim = input.trim();
     // To do this, before running the program, replace position 1 with the value 12 
@@ -23,7 +24,7 @@ fn run_program(input: &str, noun: i32, verb: i32) -> i32 {
 
 fn part_1() {
     // Get us back to where we were when things caught fire
-    if let Ok(input) = super::read_string("./input/2019-d02-input1.txt") {
+    if let Ok(input) = puzzle_input::read_string("./input/2019-d02-input1.txt") {
         let trim = input.trim();
         // To do this, before running the program, replace position 1 with the value 12 
         // and replace position 2 with the value 2. 
@@ -34,7 +35,7 @@ fn part_1() {
 }
 
 fn part_2() {
-    if let Ok(input) = super::read_string("./input/2019-d02-input1.txt") {
+    if let Ok(input) = puzzle_input::read_string("./input/2019-d02-input1.txt") {
         let trim = input.trim();
         // What pair of inputs produces output 19690720
         let target: i32 = 19690720;

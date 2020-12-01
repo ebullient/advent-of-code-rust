@@ -1,9 +1,25 @@
-// use std::io;
 
 #[derive(Debug)]
 pub struct ProgramIO {
-    pub input: i32,
+    pub input: Vec<i32>,
     pub output: i32
+}
+
+impl ProgramIO {
+    pub fn new(values: Vec<i32>) -> ProgramIO {
+        ProgramIO {
+            input: values,
+            output: 0
+        }
+    }
+
+    pub fn add_input(&mut self, value: i32) {
+        self.input.push(value);
+    }
+
+    pub fn take_input(&mut self) -> i32 {
+        self.input.remove(0)
+    }
 }
 
 // A tuple struct
@@ -76,7 +92,7 @@ fn opcode_3(_modes: Modes, i: usize, codes: &mut Vec<i32>, io: &mut ProgramIO) -
     // position given by its only parameter. 
 
     let ix: usize = codes[i+1] as usize;
-    codes[ix] = io.input;
+    codes[ix] = io.take_input();
 
     // let mut input = String::new();
     // println!(">>");
@@ -261,7 +277,7 @@ mod tests {
 
     #[test]
     fn test_intcode_program() {
-        let mut io = ProgramIO{input: 0, output: 0};
+        let mut io = ProgramIO::new(vec![0]);
 
         assert_eq!(intcode_program("1,0,0,0,99", &mut io), "2,0,0,0,99");
         assert_eq!(intcode_program("2,3,0,3,99", &mut io), "2,3,0,6,99");
@@ -290,68 +306,66 @@ mod tests {
 
     #[test]
     fn test_equal_to() {
-        let mut io = ProgramIO{input: 0, output: 0};
+        let mut io = ProgramIO::new(vec![0,8]);
 
         intcode_program("3,9,8,9,10,9,4,9,99,-1,8", &mut io);
         assert_eq!(io.output, 0);
 
-        io.input = 8;
         intcode_program("3,9,8,9,10,9,4,9,99,-1,8", &mut io);
         assert_eq!(io.output, 1);
     }
 
     #[test]
     fn test_less_than() {
-        let mut io = ProgramIO{input: 0, output: 0};
+        let mut io = ProgramIO::new(vec![0,8]);
 
         intcode_program("3,9,7,9,10,9,4,9,99,-1,8", &mut io);
         assert_eq!(io.output, 1);
 
-        io.input = 8;
         intcode_program("3,9,7,9,10,9,4,9,99,-1,8", &mut io);
         assert_eq!(io.output, 0);
     }
 
     #[test]
     fn test_equal_to_immediate() {
-        let mut io = ProgramIO{input: 0, output: 0};
+        let mut io = ProgramIO::new(vec![0,8]);
+
         intcode_program("3,3,1108,-1,8,3,4,3,99", &mut io);
         assert_eq!(io.output, 0);
 
-        io.input = 8;
         intcode_program("3,3,1108,-1,8,3,4,3,99", &mut io);
         assert_eq!(io.output, 1);
     }
 
     #[test]
     fn test_less_than_immediate() {
-        let mut io = ProgramIO{input: 0, output: 0};
+        let mut io = ProgramIO::new(vec![0,8]);
+
         intcode_program("3,3,1107,-1,8,3,4,3,99", &mut io);
         assert_eq!(io.output, 1);
 
-        io.input = 8;
         intcode_program("3,3,1107,-1,8,3,4,3,99", &mut io);
         assert_eq!(io.output, 0);
     }
 
     #[test]
     fn test_jump_to_position() {
-        let mut io = ProgramIO{input: 0, output: 0};
+        let mut io = ProgramIO::new(vec![0,8]);
+
         intcode_program("3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9", &mut io);
         assert_eq!(io.output, 0);
 
-        io.input = 8;
         intcode_program("3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9", &mut io);
         assert_eq!(io.output, 1);
     }
 
     #[test]
     fn test_jump_to_immediate() {
-        let mut io = ProgramIO{input: 0, output: 0};
+        let mut io = ProgramIO::new(vec![0,8]);
+
         intcode_program("3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9", &mut io);
         assert_eq!(io.output, 0);
 
-        io.input = 8;
         intcode_program("3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9", &mut io);
         assert_eq!(io.output, 1);
     }
@@ -362,16 +376,80 @@ mod tests {
         1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,
         999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99";
 
-        let mut io = ProgramIO{input: 0, output: 0};
+        let mut io = ProgramIO::new(vec![0,8,18]);
+
         intcode_program(instr, &mut io);
         assert_eq!(io.output, 999);
 
-        io.input = 8;
         intcode_program(instr, &mut io);
         assert_eq!(io.output, 1000);
 
-        io.input = 18;
         intcode_program(instr, &mut io);
         assert_eq!(io.output, 1001);
+    }
+
+    #[test]
+    fn test_thruster_signal_1() {
+        let instr = "3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0";
+
+        let mut a_io = ProgramIO::new(vec![4, 0]);
+        intcode_program(instr, &mut a_io);
+
+        let mut b_io = ProgramIO::new(vec![3, a_io.output]);
+        intcode_program(instr, &mut b_io);
+
+        let mut c_io = ProgramIO::new(vec![2, b_io.output]);
+        intcode_program(instr, &mut c_io);
+
+        let mut d_io = ProgramIO::new(vec![1, c_io.output]);
+        intcode_program(instr, &mut d_io);
+
+        let mut e_io = ProgramIO::new(vec![0, d_io.output]);
+        intcode_program(instr, &mut e_io);
+        assert_eq!(e_io.output, 43210);
+    }
+
+    #[test]
+    fn test_thruster_signal_2() {
+        let instr = "3,23,3,24,1002,24,10,24,1002,23,-1,23,
+        101,5,23,23,1,24,23,23,4,23,99,0,0";
+
+        let mut a_io = ProgramIO::new(vec![0, 0]);
+        intcode_program(instr, &mut a_io);
+
+        let mut b_io = ProgramIO::new(vec![1, a_io.output]);
+        intcode_program(instr, &mut b_io);
+
+        let mut c_io = ProgramIO::new(vec![2, b_io.output]);
+        intcode_program(instr, &mut c_io);
+
+        let mut d_io = ProgramIO::new(vec![3, c_io.output]);
+        intcode_program(instr, &mut d_io);
+
+        let mut e_io = ProgramIO::new(vec![4, d_io.output]);
+        intcode_program(instr, &mut e_io);
+        assert_eq!(e_io.output, 54321);
+    }
+
+    #[test]
+    fn test_thruster_signal_3() {
+        let instr = "3,31,3,32,1002,32,10,32,1001,31,-2,31,1007,31,0,33,
+        1002,33,7,33,1,33,31,31,1,32,31,31,4,31,99,0,0,0";
+
+        let mut a_io = ProgramIO::new(vec![1, 0]);
+        intcode_program(instr, &mut a_io);
+
+        let mut b_io = ProgramIO::new(vec![0, a_io.output]);
+        intcode_program(instr, &mut b_io);
+
+        let mut c_io = ProgramIO::new(vec![4, b_io.output]);
+        intcode_program(instr, &mut c_io);
+
+        let mut d_io = ProgramIO::new(vec![3, c_io.output]);
+        intcode_program(instr, &mut d_io);
+
+        let mut e_io = ProgramIO::new(vec![2, d_io.output]);
+        intcode_program(instr, &mut e_io);
+        assert_eq!(e_io.output, 65210);
     }
 }

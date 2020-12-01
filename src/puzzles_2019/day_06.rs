@@ -1,12 +1,13 @@
 use petgraph::graphmap::UnGraphMap;
 use petgraph::algo::dijkstra;
 use petgraph::algo::astar;
+use crate::puzzle_input;
 
 pub fn run() {
-    if let Ok(input) = super::read_string("./input/2019-d06-input1.txt") {
+    if let Ok(input) = puzzle_input::read_string("./input/2019-d06-input1.txt") {
         let g = parse_input(&input);
         println!("** Part 1 Final: {:?}", chksum_orbits(&g));
-        println!("** Part 1 Final: {:?}", count_transfers(&g));
+        println!("** Part 2 Final: {:?}", count_transfers(&g));
     }
 }
 
