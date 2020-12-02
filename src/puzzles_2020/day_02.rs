@@ -1,29 +1,16 @@
 use crate::puzzle_input;
 
 pub fn run() {
-    let mut n = 0;
-    if let Ok(mut lines) = puzzle_input::read_lines("./input/2020-d02-input1.txt") {
-        while let Some(item) = lines.next() {
-            if let Ok(line) = item {
-                if is_valid(line.as_str()) {
-                    n += 1;
-                }
-            }
-        }
-    }
-    println!("** Part 1 Final: {:?}", n);
+    let mut lines = puzzle_input::read_all_lines("./input/2020-d02-input1.txt");
 
-    n = 0;
-    if let Ok(mut lines) = puzzle_input::read_lines("./input/2020-d02-input1.txt") {
-        while let Some(item) = lines.next() {
-            if let Ok(line) = item {
-                if is_really_valid(line.as_str()) {
-                    n += 1;
-                }
-            }
-        }
-    }
-    println!("** Part 2 Final: {:?}", n);
+    println!("** Part 1 Final: {:?}", lines.iter_mut()
+        .filter(|x| is_valid(x.as_str()))
+        .count());
+
+
+    println!("** Part 2 Final: {:?}", lines.iter_mut()
+        .filter(|x| is_really_valid(x.as_str()))
+        .count());
 }
 
 fn is_valid(line: &str) -> bool {
