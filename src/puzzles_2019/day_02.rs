@@ -7,7 +7,7 @@ pub fn run() {
 }
 
 fn run_program(input: &str, noun: i32, verb: i32) -> i32 {
-    let mut io = compute::ProgramIO::new(vec![0]);
+    let mut io = compute::DefaultProgramIO::new(vec![0]);
 
     let trim = input.trim();
     // To do this, before running the program, replace position 1 with the value 12 

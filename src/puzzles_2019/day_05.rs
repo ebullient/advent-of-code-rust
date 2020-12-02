@@ -7,7 +7,7 @@ pub fn run() {
                                     .map(|x| x.trim().parse::<i32>().unwrap())
                                     .collect();
 
-        let mut io = compute::ProgramIO::new(vec![1]);
+        let mut io = compute::DefaultProgramIO::new(vec![1]);
         compute::run(&mut codes, &mut io);
         println!("** Part 1 Final: {:?}", io);
     }
@@ -17,7 +17,7 @@ pub fn run() {
                                     .map(|x| x.trim().parse::<i32>().unwrap())
                                     .collect();
 
-        let mut io = compute::ProgramIO::new(vec![5]);
+        let mut io = compute::DefaultProgramIO::new(vec![5]);
         compute::run(&mut codes, &mut io);
         println!("** Part 2 Final: {:?}", io);
     }
