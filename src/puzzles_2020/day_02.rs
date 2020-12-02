@@ -16,7 +16,7 @@ pub fn run() {
 fn is_valid(line: &str) -> bool {
     let mut iter = line.split_whitespace();
     let mut repeat_iter = iter.next().unwrap().split('-');
-    let letter = iter.next().unwrap().trim_matches(':').parse::<char>().unwrap();
+    let letter = iter.next().unwrap().chars().nth(0).unwrap();
     let password = iter.next().unwrap();
 
     let min = repeat_iter.next().unwrap().parse::<usize>().unwrap();
@@ -34,14 +34,14 @@ fn char_at(s: &str, pos: usize) -> char {
 fn is_really_valid(line: &str) -> bool {
     let mut iter = line.split_whitespace();
     let mut position_iter = iter.next().unwrap().split('-');
-    let letter = iter.next().unwrap().trim_matches(':').parse::<char>().unwrap();
+    let letter = iter.next().unwrap().chars().nth(0).unwrap();
     let password = iter.next().unwrap();
 
     let first = position_iter.next().unwrap().parse::<usize>().unwrap();
     let last = position_iter.next().unwrap().parse::<usize>().unwrap();
 
-    (letter == char_at(password, first) && letter != char_at(password, last)) || 
-    (letter != char_at(password, first) && letter == char_at(password, last))
+    // character should not appear in both places
+    (letter == char_at(password, first)) != (letter == char_at(password, last))
 }
 
 #[cfg(test)]
