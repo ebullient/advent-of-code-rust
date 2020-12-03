@@ -2,7 +2,8 @@ use crate::puzzle_input;
 
 pub fn run() {
     let input = puzzle_input::read_all_lines("./input/2020-d03-input1.txt");
-    let mut grid = Grid::new(7, input);
+    let mut grid = Grid::new(input);
+
     let t1 = grid.traverse_badly(3, 1);
     println!("** Part 1 Final: {:?}", t1);
 
@@ -16,59 +17,31 @@ pub fn run() {
 #[derive(Clone, Debug)]
 struct Grid {
     data: Vec<Vec<char>>,
-    debug: bool
+    cols: usize,
+    y_max: usize
 }
 impl Grid {
-    pub fn new(x_factor: usize, values: Vec<String>) -> Grid {
+    pub fn new(values: Vec<String>) -> Grid {
         let mut data: Vec<Vec<char>> = Vec::with_capacity(values.len());
-        let y = values.len();
-        let x = y * x_factor;
-        let x1 = values[0].chars().count();
-        let n = if x % x1 != 0 {
-            (x / x1) + 1
-        } else {
-            x / x1
-        };
-        println!("{:?} rows, {:?}. Data {:?} is {:?} long, must repeat {:?} times",
-            y,
-            x,
-            values[0],
-            values[0].len(),
-            n
-        );
-
         for row in values.iter() {
-            let mut col: Vec<char> = Vec::with_capacity(x);
-            for _ in 0..n {
-                col.extend(row.chars());
-            }
-            data.push(col);
+            data.push(row.chars().collect());
         }
 
         Grid {
             data: data,
-            debug: false
-        }
-    }
-
-    #[allow(dead_code)]
-    pub fn dump(&self) {
-        for (y, row) in self.data.iter().enumerate() {
-            print!("{}", format!("{:04}: ", y));
-            row.iter().for_each(|x| print!("{}", x));
-            println!();
+            cols: values[0].len(),
+            y_max: values.len() - 1
         }
     }
 
     pub fn traverse_badly(&mut self, i: usize, j: usize) -> i64 {
         let mut x = 0;
         let mut y = 0;
-        let max = self.data.len() - 1;
         let mut trees = 0;
-        while y < max {
+        while y < self.y_max {
             x += i;
             y += j;
-            if self.data[y][x] == '#' {
+            if self.data[y][x % self.cols] == '#' {
                 trees += 1;
             }
         }
@@ -97,7 +70,7 @@ mod tests {
         #...##....#
         .#..#...#.#";
 
-        let mut grid = Grid::new(7, input.split_whitespace()
+        let mut grid = Grid::new(input.split_whitespace()
             .map(|x| x.trim().to_string())
             .collect());
 
