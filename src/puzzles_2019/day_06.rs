@@ -4,11 +4,10 @@ use petgraph::algo::astar;
 use crate::puzzle_input;
 
 pub fn run() {
-    if let Ok(input) = puzzle_input::read_string("./input/2019-d06-input1.txt") {
-        let g = parse_input(&input);
-        println!("** Part 1 Final: {:?}", chksum_orbits(&g));
-        println!("** Part 2 Final: {:?}", count_transfers(&g));
-    }
+    let input = puzzle_input::read_string("./input/2019-d06-input1.txt");
+    let g = parse_input(&input);
+    println!("** Part 1 Final: {:?}", chksum_orbits(&g));
+    println!("** Part 2 Final: {:?}", count_transfers(&g));
 }
 
 fn parse_input(input_ref: &str) -> UnGraphMap<&str, i32> {
