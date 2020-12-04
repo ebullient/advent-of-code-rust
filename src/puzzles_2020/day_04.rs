@@ -2,6 +2,7 @@ extern crate regex;
 extern crate lazy_static;
 
 use crate::puzzle_input;
+use std::collections::HashMap;
 use regex::Regex;
 
 pub fn run() {
@@ -18,122 +19,74 @@ enum Validity {
     Valid
 }
 
-#[derive(Debug)]
-struct Record {
-    byr: Validity,
-    iyr: Validity,
-    eyr: Validity,
-    hgt: Validity,
-    hcl: Validity,
-    ecl: Validity,
-    pid: Validity,
-    cid: Validity
+static REQ_KEYS: [&'static str; 7] = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
+static MISSING: Option<&Validity> = Some(&Validity::Missing);
+
+fn has_all_required<'a>(map: &HashMap<&'a str, Validity>) -> bool {
+    REQ_KEYS.iter().filter(|x| !map.contains_key(*x)).count() == 0
 }
-impl Record {
-    pub fn new() -> Record {
-        Record {
-            byr: Validity::Missing,
-            iyr: Validity::Missing,
-            eyr: Validity::Missing,
-            hgt: Validity::Missing,
-            hcl: Validity::Missing,
-            ecl: Validity::Missing,
-            pid: Validity::Missing,
-            cid: Validity::Missing
+
+fn is_valid<'a>(map: &HashMap<&'a str, Validity>) -> bool {
+    REQ_KEYS.iter().filter(|x| *map.get(*x).or(MISSING).unwrap() != Validity::Valid).count() == 0
+}
+
+fn check<'a>(map: &mut HashMap<&'a str, Validity>, line: &str) {
+    lazy_static! {
+        static ref RE: Regex = Regex::new(r"^([a-z]*):(.*)$").unwrap();
+        static ref YR: Regex = Regex::new(r"^\d{4}$").unwrap();
+        static ref HT: Regex = Regex::new(r"^(\d+)(cm|in)$").unwrap();
+        static ref HCL: Regex = Regex::new(r"^#[a-f0-9]{6}$").unwrap();
+        static ref ECL: Regex = Regex::new(r"^(?:amb|blu|brn|gry|grn|hzl|oth)$").unwrap();
+        static ref PID: Regex = Regex::new(r"^\d{9}$").unwrap();
+    }
+
+    line.split_whitespace().for_each(|x| {
+        for cap in RE.captures_iter(x) {
+            match &cap[1] {
+                "byr" => map.insert("byr", if YR.is_match(&cap[2]) && in_year_range(&cap[2], 1920, 2002) {
+                        Validity::Valid
+                    } else {
+                        Validity::Present
+                    }),
+                "iyr" => map.insert("iyr", if YR.is_match(&cap[2]) && in_year_range(&cap[2], 2010, 2020) {
+                        Validity::Valid
+                    } else {
+                        Validity::Present
+                    }),
+                "eyr" => map.insert("eyr", if YR.is_match(&cap[2]) && in_year_range(&cap[2], 2020, 2030) {
+                        Validity::Valid
+                    } else {
+                        Validity::Present
+                    }),
+                "hgt" => map.insert("hgt", if let Some(ht_caps) = HT.captures(&cap[2]) {
+                        if in_height_range(&ht_caps[1], &ht_caps[2]) {
+                            Validity::Valid
+                        } else {
+                            Validity::Present
+                        }
+                    } else {
+                        Validity::Present
+                    }),
+                "hcl" => map.insert("hcl", if HCL.is_match(&cap[2]) {
+                        Validity::Valid
+                    } else {
+                        Validity::Present
+                    }),
+                "ecl" => map.insert("ecl", if ECL.is_match(&cap[2]) {
+                        Validity::Valid
+                    } else {
+                        Validity::Present
+                    }),
+                "pid" => map.insert("pid", if PID.is_match(&cap[2]) {
+                        Validity::Valid
+                    } else {
+                        Validity::Present
+                    }),
+                "cid" => map.insert("cid", Validity::Present),
+                _ => None
+            };
         }
-    }
-
-    pub fn reset(&mut self) {
-        self.byr = Validity::Missing;
-        self.iyr = Validity::Missing;
-        self.eyr = Validity::Missing;
-        self.hgt = Validity::Missing;
-        self.hcl = Validity::Missing;
-        self.ecl = Validity::Missing;
-        self.pid = Validity::Missing;
-        self.cid = Validity::Missing;
-    }
-
-    pub fn is_present(&self) -> bool {
-        return self.byr != Validity::Missing &&
-            self.iyr != Validity::Missing &&
-            self.eyr != Validity::Missing &&
-            self.hgt != Validity::Missing &&
-            self.hcl != Validity::Missing &&
-            self.ecl != Validity::Missing &&
-            self.pid != Validity::Missing;
-            // self.cid is not required ;)
-    }
-
-    pub fn is_valid(&self) -> bool {
-        return self.byr == Validity::Valid &&
-            self.iyr == Validity::Valid &&
-            self.eyr == Validity::Valid &&
-            self.hgt == Validity::Valid &&
-            self.hcl == Validity::Valid &&
-            self.ecl == Validity::Valid &&
-            self.pid == Validity::Valid;
-            // self.cid is not required ;)
-    }
-
-    pub fn check(&mut self, line: &str) {
-        lazy_static! {
-            static ref RE: Regex = Regex::new(r"^([a-z]*):(.*)$").unwrap();
-            static ref YR: Regex = Regex::new(r"^\d{4}$").unwrap();
-            static ref HT: Regex = Regex::new(r"^(\d+)(cm|in)$").unwrap();
-            static ref HCL: Regex = Regex::new(r"^#[a-f0-9]{6}$").unwrap();
-            static ref ECL: Regex = Regex::new(r"^(?:amb|blu|brn|gry|grn|hzl|oth)$").unwrap();
-            static ref PID: Regex = Regex::new(r"^\d{9}$").unwrap();
-        }
-
-        line.split_whitespace().for_each(|x| {
-            for cap in RE.captures_iter(x) {
-                match &cap[1] {
-                    "byr" => self.byr = if YR.is_match(&cap[2]) && in_year_range(&cap[2], 1920, 2002) {
-                            Validity::Valid
-                        } else {
-                            Validity::Present
-                        },
-                    "iyr" => self.iyr = if YR.is_match(&cap[2]) && in_year_range(&cap[2], 2010, 2020) {
-                            Validity::Valid
-                        } else {
-                            Validity::Present
-                        },
-                    "eyr" => self.eyr = if YR.is_match(&cap[2]) && in_year_range(&cap[2], 2020, 2030) {
-                            Validity::Valid
-                        } else {
-                            Validity::Present
-                        },
-                    "hgt" => self.hgt = if let Some(ht_caps) = HT.captures(&cap[2]) {
-                            if in_height_range(&ht_caps[1], &ht_caps[2]) {
-                                Validity::Valid
-                            } else {
-                                Validity::Present
-                            }
-                        } else {
-                            Validity::Present
-                        },
-                    "hcl" => self.hcl = if HCL.is_match(&cap[2]) {
-                            Validity::Valid
-                        } else {
-                            Validity::Present
-                        },
-                    "ecl" => self.ecl = if ECL.is_match(&cap[2]) {
-                            Validity::Valid
-                        } else {
-                            Validity::Present
-                        },
-                    "pid" => self.pid = if PID.is_match(&cap[2]) {
-                            Validity::Valid
-                        } else {
-                            Validity::Present
-                        },
-                    "cid" => self.cid = Validity::Present,
-                    _ => {}
-                }
-            }
-        });
-    }
+    });
 }
 
 fn in_year_range(y: &str, min: i32, max: i32) -> bool {
@@ -148,21 +101,21 @@ fn in_height_range(h: &str, u: &str) -> bool {
 }
 
 fn validate(batch: &Vec<String>) -> (i32, i32) {
-    let mut record = Record::new();
+    let mut map: HashMap<&str, Validity> = HashMap::new();
     let mut present = 0;
     let mut valid = 0;
     for line in batch {
         let s = line.trim();
         if s.is_empty() {
-            present += if record.is_present() { 1 } else { 0 };
-            valid += if record.is_valid() { 1 } else { 0 };
-            record.reset();
+            present += if has_all_required(&map) { 1 } else { 0 };
+            valid += if is_valid(&map) { 1 } else { 0 };
+            map.clear();
         } else {
-            record.check(&s);
+            check(&mut map, &line);
         }
     }
-    present += if record.is_present() { 1 } else { 0 };
-    valid += if record.is_valid() { 1 } else { 0 };
+    present += if has_all_required(&map) { 1 } else { 0 };
+    valid += if is_valid(&map) { 1 } else { 0 };
 
     (present, valid)
 }
