@@ -253,7 +253,6 @@ pub fn run(codes: &mut Vec<i64>, io: &mut dyn ProgramIO) {
         relative_base: 0
     };
 
-    //let mut
     loop {
         let (modes, op) = get_parameters(computer.codes[i]);
         //println!("{:?} === {:?},{:?},{:?} {:?}", computer.codes[i], modes.0, modes.1, modes.2, op);

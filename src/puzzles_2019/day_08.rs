@@ -2,24 +2,23 @@
 use crate::puzzle_input;
 
 pub fn run() {
-    if let Ok(input) = puzzle_input::read_string("./input/2019-d08-input1.txt") {
-        let mut img = Image::new(25, 6);
-        img.read_string(&input);
+    let input = puzzle_input::read_string("./input/2019-d08-input1.txt");
+    let mut img = Image::new(25, 6);
+    img.read_string(&input);
 
 
-        let mut min = std::i32::MAX;
-        let mut result = 0;
-        for layer in &img.layers {
-            if layer.zeros < min {
-                min = layer.zeros;
-                result = layer.ones * layer.twos;
-            }
+    let mut min = std::i32::MAX;
+    let mut result = 0;
+    for layer in &img.layers {
+        if layer.zeros < min {
+            min = layer.zeros;
+            result = layer.ones * layer.twos;
         }
-
-        println!("** Part 1 Final: {:?}", result);
-
-        img.draw_image();
     }
+
+    println!("** Part 1 Final: {:?}", result);
+    img.draw_image();
+    println!("** Part 2 Final: what does image say?")
 }
 
 #[derive(Debug)]

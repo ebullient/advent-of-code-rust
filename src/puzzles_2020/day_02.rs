@@ -4,12 +4,12 @@ pub fn run() {
     let mut lines = puzzle_input::read_all_lines("./input/2020-d02-input1.txt");
 
     println!("** Part 1 Final: {:?}", lines.iter_mut()
-        .filter(|x| is_valid(x.as_str()))
+        .filter(|x| is_valid(x))
         .count());
 
 
     println!("** Part 2 Final: {:?}", lines.iter_mut()
-        .filter(|x| is_really_valid(x.as_str()))
+        .filter(|x| is_really_valid(x))
         .count());
 }
 

@@ -10,21 +10,19 @@ use std::time::Duration;
 
 
 pub fn run() {
-    if let Ok(input) = puzzle_input::read_string("./input/2019-d07-input1.txt") {
-        let codes: Vec<i64> = input.trim().split(',')
-                                    .map(|x| x.trim().parse::<i64>().unwrap())
-                                    .collect();
-        
-        println!("** Part 1 Final: {:?}", find_max_thrust(&codes));
-    }
+    let input = puzzle_input::read_string("./input/2019-d07-input1.txt");
+    let codes: Vec<i64> = input.trim().split(',')
+                                .map(|x| x.trim().parse::<i64>().unwrap())
+                                .collect();
 
-    if let Ok(input) = puzzle_input::read_string("./input/2019-d07-input1.txt") {
-        let codes: Vec<i64> = input.trim().split(',')
-                                    .map(|x| x.trim().parse::<i64>().unwrap())
-                                    .collect();
-        
-        println!("** Part 2 Final: {:?}", find_max_thrust_feedback(&codes));
-    }
+    println!("** Part 1 Final: {:?}", find_max_thrust(&codes));
+
+    let input = puzzle_input::read_string("./input/2019-d07-input1.txt");
+    let codes: Vec<i64> = input.trim().split(',')
+                                .map(|x| x.trim().parse::<i64>().unwrap())
+                                .collect();
+
+    println!("** Part 2 Final: {:?}", find_max_thrust_feedback(&codes));
 }
 
 fn find_max_thrust(codes: &Vec<i64>) -> i64 {
@@ -139,10 +137,10 @@ fn find_max_thrust_feedback(codes: &Vec<i64>) -> i64 {
         let last: i64;
 
         let mut amplifiers: Vec<Amplifier> = vec![
-            Amplifier::new('A', &codes), 
-            Amplifier::new('B', &codes), 
-            Amplifier::new('C', &codes), 
-            Amplifier::new('D', &codes), 
+            Amplifier::new('A', &codes),
+            Amplifier::new('B', &codes),
+            Amplifier::new('C', &codes),
+            Amplifier::new('D', &codes),
             Amplifier::new('E', &codes)];
 
         let current: Vec<i64> = perm.iter().copied().map(|&x| x).collect();
@@ -156,7 +154,7 @@ fn find_max_thrust_feedback(codes: &Vec<i64>) -> i64 {
             amp.connect_next(next);
         }
 
-        // Provide required input for pass of Amplifier A 
+        // Provide required input for pass of Amplifier A
         ProgramIO::add_input(&mut amplifiers[0], 0);
 
         pool.scoped(|scope| {
