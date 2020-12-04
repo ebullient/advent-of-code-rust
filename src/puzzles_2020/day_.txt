@@ -1,0 +1,14 @@
+use crate::puzzle_input;
+
+pub fn run() {
+
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test() {
+    }
+}

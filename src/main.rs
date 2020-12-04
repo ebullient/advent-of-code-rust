@@ -3,6 +3,7 @@ mod puzzles_2020;
 mod puzzle_input;
 
 extern crate getopts;
+#[macro_use] extern crate lazy_static;
 use getopts::Options;
 use std::env;
 
