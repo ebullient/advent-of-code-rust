@@ -1,4 +1,6 @@
 
+use std::collections::HashMap;
+
 pub trait ProgramIO {
     fn add_input(&mut self, value: i64);
     fn take_input(&mut self) -> i64;
@@ -10,14 +12,16 @@ pub trait ProgramIO {
 #[derive(Clone, Debug)]
 pub struct DefaultProgramIO {
     input: Vec<i64>,
-    output: i64
+    output: i64,
+    all: Vec<i64>
 }
 
 impl DefaultProgramIO {
     pub fn new(values: Vec<i64>) -> DefaultProgramIO {
         DefaultProgramIO {
             input: values,
-            output: 0
+            output: 0,
+            all: Vec::new()
         }
     }
 }
@@ -33,6 +37,7 @@ impl ProgramIO for DefaultProgramIO {
 
     fn write_output(&mut self, value: i64) {
         self.output = value;
+        self.all.push(value);
     }
 
     fn read_output(&self) -> i64 {
@@ -59,6 +64,13 @@ fn to_mode(x: i32) -> Mode {
 // A tuple struct
 struct Modes(Mode, Mode, Mode);
 
+struct Computer<'a> {
+    codes: &'a mut Vec<i64>,
+    io: &'a mut dyn ProgramIO,
+    extents: HashMap<usize, i64>,
+    relative_base: usize
+}
+
 fn get_parameters(input: i64) -> (Modes, i32) {
     let mut x = input as i32;
     let op = x % 100;
@@ -72,76 +84,103 @@ fn get_parameters(input: i64) -> (Modes, i32) {
     (Modes(to_mode(a), to_mode(b), to_mode(c)), op)
 }
 
-fn read_value(codes: &mut Vec<i64>, mode: Mode, i: usize) -> i64 {
-    if mode == Mode::Immediate {
-        return codes[i]
+// In Position mode (0), the parameter to be interpreted as a position -
+//    if the parameter is 50, its value is the value stored at address 50 in memory
+// In Immediate mode (1), a parameter is interpreted as a value - if the parameter is 50, its value is simply 50.
+// In Relative mode (2), the parameter is interpreted as a relative position:
+//    The address a relative mode parameter refers to is itself plus the current relative base.
+fn get_index(computer: &mut Computer, mode: Mode, i: usize) -> usize {
+    if mode == Mode::Position {
+        //println!("- {:?} mode from {}: {:?}", mode, i, computer.codes[i] as usize);
+        computer.codes[i] as usize
+    } else {
+        // keep as i64 to allow negative numbers for addition
+        let x: i64 = computer.codes[i] + computer.relative_base as i64;
+        // println!("- {:?} mode from {} with relative base {:?}: {:?} --> {:?}", mode, i,
+        //     computer.relative_base, computer.codes[i], x);
+        x as usize
     }
-
-    let ix = codes[i] as usize;
-    if ix > codes.len() {
-        println!("Growing from {} to {}", codes.len(), ix);
-        codes.resize(ix, 0);
-    }
-
-    codes[ix]
 }
 
-fn find_target(codes: &mut Vec<i64>, mode: Mode, i: usize) -> usize {
+
+fn read(computer: &mut Computer, mode: Mode, i: usize) -> i64 {
+    if mode == Mode::Immediate {
+        //println!("- {:?} mode from {}: {}", mode, i, computer.codes[i]);
+        return computer.codes[i]
+    }
+
+    let ix = get_index(computer, mode, i);
+
+    if ix >= computer.codes.len() {
+        //println!("<-- {:?}:{:?}", ix, computer.extents.get(&ix));
+        match computer.extents.get(&ix) {
+            Some(value) => *value,
+            None => 0
+        }
+    } else {
+        computer.codes[ix]
+    }
+}
+
+fn store(computer: &mut Computer, mode: Mode, i: usize, value: i64) {
     if mode == Mode::Immediate {
         panic!("Attempting to retrieve target {} for writing in immediate mode", i);
     }
-
-    codes[i] as usize
+    let ix = get_index(computer, mode, i);
+    if ix >= computer.codes.len() {
+        //println!("--> {:?}:{:?} .. {}", ix, computer.extents.get(&ix), value);
+        computer.extents.insert(ix, value);
+    } else {
+        computer.codes[ix] = value;
+    }
 }
 
-fn opcode_1(modes: Modes, i: usize, codes: &mut Vec<i64>) -> usize {
+fn opcode_1(modes: Modes, i: usize, computer: &mut Computer) -> usize {
     // Add value from ix + value from iy, place in iz
-    let x = read_value(codes, modes.2, i+1);
-    let y = read_value(codes, modes.1, i+2);
-    let iz = find_target(codes, modes.0, i+3) as usize;
+    let x = read(computer, modes.2, i+1);
+    let y = read(computer, modes.1, i+2);
 
-    codes[iz] = x + y;
+    store(computer, modes.0, i+3, x + y);
 
     i+4 // advance 4: 1 opcode + 3 parameters
 }
 
-fn opcode_2(modes: Modes, i: usize, codes: &mut Vec<i64>) -> usize {
+fn opcode_2(modes: Modes, i: usize, computer: &mut Computer) -> usize {
     // Multiply value from ix * value from iy, place in iz
     // Add value from ix + value from iy, place in iz
-    let x = read_value(codes, modes.2, i+1);
-    let y = read_value(codes, modes.1, i+2);
-    let iz = find_target(codes, modes.0, i+3) as usize;
+    let x = read(computer, modes.2, i+1);
+    let y = read(computer, modes.1, i+2);
 
-    codes[iz] = x * y;
+    store(computer, modes.0, i+3, x * y);
 
     i+4 // advance 4: 1 opcode + 3 parameters
 }
 
-fn opcode_3(modes: Modes, i: usize, codes: &mut Vec<i64>, io: &mut dyn ProgramIO) -> usize {
-    // Opcode 3 takes a single integer as input and saves it to the 
-    // position given by its only parameter. 
+fn opcode_3(modes: Modes, i: usize, computer: &mut Computer) -> usize {
+    // Opcode 3 takes a single integer as input and saves it to the
+    // position given by its only parameter.
 
-    let ix = find_target(codes, modes.2, i+1) as usize;
-    codes[ix] = io.take_input();
- 
+    let input = computer.io.take_input();
+    store(computer, modes.2, i+1, input);
+
     i+2 // advance 2: 1 opcode + 1 parameter
 }
 
-fn opcode_4(modes: Modes, i: usize, codes: &mut Vec<i64>, io: &mut dyn ProgramIO) -> usize {
-    // Opcode 4 outputs the value of its only parameter. 
+fn opcode_4(modes: Modes, i: usize, computer: &mut Computer) -> usize {
+    // Opcode 4 outputs the value of its only parameter.
     // For example, the instruction 4,50 would output the value at address 50.
-    let x = read_value(codes, modes.2, i+1);
-    io.write_output(x);
+    let x = read(computer, modes.2, i+1);
+    computer.io.write_output(x);
 
     i+2 // advance 2: 1 opcode + 1 parameter
 }
 
-fn opcode_5(modes: Modes, i: usize, codes: &mut Vec<i64>) -> usize {
-    // Opcode 5 is jump-if-true: if the first parameter is non-zero, 
-    // it sets the instruction pointer to the value from the second parameter. 
+fn opcode_5(modes: Modes, i: usize, computer: &mut Computer) -> usize {
+    // Opcode 5 is jump-if-true: if the first parameter is non-zero,
+    // it sets the instruction pointer to the value from the second parameter.
     // Otherwise, it does nothing.
-    let x = read_value(codes, modes.2, i+1);
-    let y = read_value(codes, modes.1, i+2);
+    let x = read(computer, modes.2, i+1);
+    let y = read(computer, modes.1, i+2);
 
     if x != 0 {
         y as usize
@@ -150,12 +189,12 @@ fn opcode_5(modes: Modes, i: usize, codes: &mut Vec<i64>) -> usize {
     }
 }
 
-fn opcode_6(modes: Modes, i: usize, codes: &mut Vec<i64>) -> usize {
-    // Opcode 6 is jump-if-false: if the first parameter is zero, 
-    // it sets the instruction pointer to the value from the second parameter. 
+fn opcode_6(modes: Modes, i: usize, computer: &mut Computer) -> usize {
+    // Opcode 6 is jump-if-false: if the first parameter is zero,
+    // it sets the instruction pointer to the value from the second parameter.
     // Otherwise, it does nothing.
-    let x = read_value(codes, modes.2, i+1);
-    let y = read_value(codes, modes.1, i+2);
+    let x = read(computer, modes.2, i+1);
+    let y = read(computer, modes.1, i+2);
 
     if x == 0 {
         y as usize
@@ -164,57 +203,72 @@ fn opcode_6(modes: Modes, i: usize, codes: &mut Vec<i64>) -> usize {
     }
 }
 
-fn opcode_7(modes: Modes, i: usize, codes: &mut Vec<i64>) -> usize {
-    // Opcode 7 is less than: if the first parameter is less than the second parameter, 
+fn opcode_7(modes: Modes, i: usize, computer: &mut Computer) -> usize {
+    // Opcode 7 is less than: if the first parameter is less than the second parameter,
     // it stores 1 in the position given by the third parameter. Otherwise, it stores 0.
-    let x = read_value(codes, modes.2, i+1);
-    let y = read_value(codes, modes.1, i+2);
-    let iz = find_target(codes, modes.0, i+3) as usize;
+    let x = read(computer, modes.2, i+1);
+    let y = read(computer, modes.1, i+2);
 
-    codes[iz] = 
+    store(computer, modes.0, i+3,
         if x < y {
             1
         } else {
             0
-        };
+        });
 
     i+4 // advance 4: 1 opcode + 3 parameters
 }
 
-fn opcode_8(modes: Modes, i: usize, codes: &mut Vec<i64>) -> usize {
-    // Opcode 8 is equals: if the first parameter is equal to the second parameter, 
+fn opcode_8(modes: Modes, i: usize, computer: &mut Computer) -> usize {
+    // Opcode 8 is equals: if the first parameter is equal to the second parameter,
     // it stores 1 in the position given by the third parameter. Otherwise, it stores 0.
-    let x = read_value(codes, modes.2, i+1);
-    let y = read_value(codes, modes.1, i+2);
-    let iz = find_target(codes, modes.0, i+3) as usize;
-
-    codes[iz] = 
+    let x = read(computer, modes.2, i+1);
+    let y = read(computer, modes.1, i+2);
+    store(computer, modes.0, i+3,
         if x == y {
             1
         } else {
             0
-        };
+        });
 
     i+4 // advance 4: 1 opcode + 3 parameters
 }
 
+fn opcode_9(modes: Modes, i: usize, computer: &mut Computer) -> usize {
+    // Opcode 9 adjusts the relative base by the value of its only parameter. The relative base increases
+    // (or decreases, if the value is negative) by the value of the parameter.
+
+    let x = read(computer, modes.2, i+1) + computer.relative_base as i64;
+    computer.relative_base = x as usize;
+
+    i+2 // advance 2: 1 opcode + 1 parameter
+}
+
 pub fn run(codes: &mut Vec<i64>, io: &mut dyn ProgramIO) {
     let mut i: usize = 0;
-    //let mut 
+    let mut computer = Computer {
+        codes: codes,
+        io: io,
+        extents: HashMap::new(),
+        relative_base: 0
+    };
+
+    //let mut
     loop {
-        let (modes, op) = get_parameters(codes[i]);
-        //println!("{},{},{} {:?}", modes.0, modes.1, modes.2, op);
+        let (modes, op) = get_parameters(computer.codes[i]);
+        //println!("{:?} === {:?},{:?},{:?} {:?}", computer.codes[i], modes.0, modes.1, modes.2, op);
         match op {
-            1 => { i = opcode_1(modes, i, codes) },
-            2 => { i = opcode_2(modes, i, codes) },
-            3 => { i = opcode_3(modes, i, codes, io) },
-            4 => { i = opcode_4(modes, i, codes, io) },
-            5 => { i = opcode_5(modes, i, codes) },
-            6 => { i = opcode_6(modes, i, codes) },
-            7 => { i = opcode_7(modes, i, codes) },
-            8 => { i = opcode_8(modes, i, codes) },
-            99 => { 
-                break; 
+            1 => { i = opcode_1(modes, i, &mut computer) },
+            2 => { i = opcode_2(modes, i, &mut computer) },
+            3 => { i = opcode_3(modes, i, &mut computer) },
+            4 => { i = opcode_4(modes, i, &mut computer) },
+            5 => { i = opcode_5(modes, i, &mut computer) },
+            6 => { i = opcode_6(modes, i, &mut computer) },
+            7 => { i = opcode_7(modes, i, &mut computer) },
+            8 => { i = opcode_8(modes, i, &mut computer) },
+            9 => { i = opcode_9(modes, i, &mut computer) },
+            99 => {
+                break;
             },
             _ => {
                 println!("ERROR: {0} Unknown at index {1}", codes[i], i);
@@ -249,7 +303,7 @@ mod tests {
     }
 
     #[test]
-    fn test_parameter_mode() {
+    fn test_intcode_parameter_mode() {
         let (modes, op) = get_parameters(01245);
         assert_eq!(modes.0, Mode::Position);
         assert_eq!(modes.1, Mode::Immediate);
@@ -258,7 +312,7 @@ mod tests {
     }
 
     #[test]
-    fn test_parameter_mode_2() {
+    fn test_intcode_parameter_mode_2() {
         let (modes, op) = get_parameters(1002);
         assert_eq!(modes.0, Mode::Position);
         assert_eq!(modes.1, Mode::Immediate);
@@ -267,7 +321,7 @@ mod tests {
     }
 
     #[test]
-    fn test_equal_to() {
+    fn test_intcode_equal_to() {
         let mut io = DefaultProgramIO::new(vec![0,8]);
 
         intcode_program("3,9,8,9,10,9,4,9,99,-1,8", &mut io);
@@ -278,7 +332,7 @@ mod tests {
     }
 
     #[test]
-    fn test_less_than() {
+    fn test_intcode_less_than() {
         let mut io = DefaultProgramIO::new(vec![0,8]);
 
         intcode_program("3,9,7,9,10,9,4,9,99,-1,8", &mut io);
@@ -289,7 +343,7 @@ mod tests {
     }
 
     #[test]
-    fn test_equal_to_immediate() {
+    fn test_intcode_equal_to_immediate() {
         let mut io = DefaultProgramIO::new(vec![0,8]);
 
         intcode_program("3,3,1108,-1,8,3,4,3,99", &mut io);
@@ -300,7 +354,7 @@ mod tests {
     }
 
     #[test]
-    fn test_less_than_immediate() {
+    fn test_intcode_less_than_immediate() {
         let mut io = DefaultProgramIO::new(vec![0,8]);
 
         intcode_program("3,3,1107,-1,8,3,4,3,99", &mut io);
@@ -311,7 +365,7 @@ mod tests {
     }
 
     #[test]
-    fn test_jump_to_position() {
+    fn test_intcode_jump_to_position() {
         let mut io = DefaultProgramIO::new(vec![0,8]);
 
         intcode_program("3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9", &mut io);
@@ -322,7 +376,7 @@ mod tests {
     }
 
     #[test]
-    fn test_jump_to_immediate() {
+    fn test_intcode_jump_to_immediate() {
         let mut io = DefaultProgramIO::new(vec![0,8]);
 
         intcode_program("3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9", &mut io);
@@ -333,7 +387,7 @@ mod tests {
     }
 
     #[test]
-    fn test_larger_example() {
+    fn test_intcode_larger_example() {
         let instr = "3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,
         1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,
         999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99";
@@ -351,7 +405,7 @@ mod tests {
     }
 
     #[test]
-    fn test_thruster_signal_1() {
+    fn test_intcode_thruster_signal_1() {
         let instr = "3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0";
 
         let mut a_io = DefaultProgramIO::new(vec![4, 0]);
@@ -372,7 +426,7 @@ mod tests {
     }
 
     #[test]
-    fn test_thruster_signal_2() {
+    fn test_intcode_thruster_signal_2() {
         let instr = "3,23,3,24,1002,24,10,24,1002,23,-1,23,
         101,5,23,23,1,24,23,23,4,23,99,0,0";
 
@@ -394,7 +448,7 @@ mod tests {
     }
 
     #[test]
-    fn test_thruster_signal_3() {
+    fn test_intcode_thruster_signal_3() {
         let instr = "3,31,3,32,1002,32,10,32,1001,31,-2,31,1007,31,0,33,
         1002,33,7,33,1,33,31,31,1,32,31,31,4,31,99,0,0,0";
 
@@ -413,5 +467,30 @@ mod tests {
         let mut e_io = DefaultProgramIO::new(vec![2, d_io.read_output()]);
         intcode_program(instr, &mut e_io);
         assert_eq!(e_io.read_output(), 65210);
+    }
+
+    #[test]
+    fn test_intcode_quine() {
+        let instr = "109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99";
+        let mut io = DefaultProgramIO::new(vec![]);
+        intcode_program(instr, &mut io);
+        assert_eq!(io.all.iter().join(","), "109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99");
+    }
+
+    #[test]
+    fn test_intcode_large_number() {
+        let instr = "1102,34915192,34915192,7,4,7,99,0";
+        let mut io = DefaultProgramIO::new(vec![]);
+        intcode_program(instr, &mut io);
+        println!("{:?}", io.all);
+        assert_eq!(io.output.to_string().len(),16);
+    }
+
+    #[test]
+    fn test_intcode_echo_number() {
+        let instr = "104,1125899906842624,99";
+        let mut io = DefaultProgramIO::new(vec![]);
+        intcode_program(instr, &mut io);
+        assert_eq!(io.output,1125899906842624);
     }
 }
