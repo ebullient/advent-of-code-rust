@@ -4,7 +4,9 @@ use std::io::{self, BufRead, BufReader};
 use std::path::Path;
 
 pub fn read_all_lines<'a, P>(filename: P) -> Vec<String>
-where P: AsRef<Path>, {
+where
+    P: AsRef<Path>,
+{
     let mut result: Vec<String> = Vec::new();
     let mut reader = Box::new(io::empty()) as Box<dyn BufRead>;
 
@@ -22,7 +24,9 @@ where P: AsRef<Path>, {
 }
 
 pub fn read_string<P>(filename: P) -> String
-where P: AsRef<Path>,  {
+where
+    P: AsRef<Path>,
+{
     if let Ok(result) = fs::read_to_string(filename) {
         result
     } else {

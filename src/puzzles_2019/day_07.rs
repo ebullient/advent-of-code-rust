@@ -3,24 +3,27 @@ use super::compute::{DefaultProgramIO, ProgramIO};
 use crate::puzzle_input;
 
 extern crate scoped_threadpool;
+use itertools::Itertools;
 use scoped_threadpool::Pool;
 use std::sync::mpsc::{channel, Receiver, Sender};
-use itertools::Itertools;
 use std::time::Duration;
-
 
 pub fn run() {
     let input = puzzle_input::read_string("./input/2019-d07-input1.txt");
-    let codes: Vec<i64> = input.trim().split(',')
-                                .map(|x| x.trim().parse::<i64>().unwrap())
-                                .collect();
+    let codes: Vec<i64> = input
+        .trim()
+        .split(',')
+        .map(|x| x.trim().parse::<i64>().unwrap())
+        .collect();
 
     println!("** Part 1 Final: {:?}", find_max_thrust(&codes));
 
     let input = puzzle_input::read_string("./input/2019-d07-input1.txt");
-    let codes: Vec<i64> = input.trim().split(',')
-                                .map(|x| x.trim().parse::<i64>().unwrap())
-                                .collect();
+    let codes: Vec<i64> = input
+        .trim()
+        .split(',')
+        .map(|x| x.trim().parse::<i64>().unwrap())
+        .collect();
 
     println!("** Part 2 Final: {:?}", find_max_thrust_feedback(&codes));
 }
@@ -48,7 +51,10 @@ fn find_max_thrust(codes: &Vec<i64>) -> i64 {
             max = last;
             max_sequence = current;
         }
-        println!("{:?}: out {:?}, max {:?} -> {:?}", perm, last, &max_sequence, max);
+        println!(
+            "{:?}: out {:?}, max {:?} -> {:?}",
+            perm, last, &max_sequence, max
+        );
     }
     max
 }
@@ -72,7 +78,7 @@ impl Amplifier {
             output: 0,
             next: None,
             tx: tx,
-            rx: rx
+            rx: rx,
         }
     }
 
@@ -141,7 +147,8 @@ fn find_max_thrust_feedback(codes: &Vec<i64>) -> i64 {
             Amplifier::new('B', &codes),
             Amplifier::new('C', &codes),
             Amplifier::new('D', &codes),
-            Amplifier::new('E', &codes)];
+            Amplifier::new('E', &codes),
+        ];
 
         let current: Vec<i64> = perm.iter().copied().map(|&x| x).collect();
         for (i, x) in current.iter().enumerate() {
@@ -159,7 +166,7 @@ fn find_max_thrust_feedback(codes: &Vec<i64>) -> i64 {
 
         pool.scoped(|scope| {
             for amp in &mut amplifiers {
-                scope.execute(move|| {
+                scope.execute(move || {
                     compute::run(&mut amp.codes.to_vec(), amp);
                 });
             }
@@ -171,7 +178,10 @@ fn find_max_thrust_feedback(codes: &Vec<i64>) -> i64 {
             max_sequence = current;
         }
 
-        println!("{:?}: out {:?}, max {:?} -> {:?}", perm, last, &max_sequence, max);
+        println!(
+            "{:?}: out {:?}, max {:?} -> {:?}",
+            perm, last, &max_sequence, max
+        );
     }
 
     max
@@ -186,9 +196,10 @@ mod tests {
         let instr = "3,31,3,32,1002,32,10,32,1001,31,-2,31,1007,31,0,33,
         1002,33,7,33,1,33,31,31,1,32,31,31,4,31,99,0,0,0";
 
-        let codes: Vec<i64> = instr.split(',')
-                                    .map(|x| x.trim().parse::<i64>().unwrap())
-                                    .collect();
+        let codes: Vec<i64> = instr
+            .split(',')
+            .map(|x| x.trim().parse::<i64>().unwrap())
+            .collect();
 
         assert_eq!(find_max_thrust(&codes), 65210);
     }
@@ -198,9 +209,10 @@ mod tests {
         let instr = "3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,
         27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5";
 
-        let codes: Vec<i64> = instr.split(',')
-                                    .map(|x| x.trim().parse::<i64>().unwrap())
-                                    .collect();
+        let codes: Vec<i64> = instr
+            .split(',')
+            .map(|x| x.trim().parse::<i64>().unwrap())
+            .collect();
 
         assert_eq!(find_max_thrust_feedback(&codes), 139629729);
     }
@@ -211,9 +223,10 @@ mod tests {
         -5,54,1105,1,12,1,53,54,53,1008,54,0,55,1001,55,1,55,2,53,55,53,4,
         53,1001,56,-1,56,1005,56,6,99,0,0,0,0,10";
 
-        let codes: Vec<i64> = instr.split(',')
-                                    .map(|x| x.trim().parse::<i64>().unwrap())
-                                    .collect();
+        let codes: Vec<i64> = instr
+            .split(',')
+            .map(|x| x.trim().parse::<i64>().unwrap())
+            .collect();
 
         assert_eq!(find_max_thrust_feedback(&codes), 18216);
     }

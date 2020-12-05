@@ -18,7 +18,7 @@ pub fn run() {
 struct Grid {
     data: Vec<Vec<char>>,
     cols: usize,
-    y_max: usize
+    y_max: usize,
 }
 impl Grid {
     pub fn new(values: Vec<String>) -> Grid {
@@ -30,7 +30,7 @@ impl Grid {
         Grid {
             data: data,
             cols: values[0].len(),
-            y_max: values.len() - 1
+            y_max: values.len() - 1,
         }
     }
 
@@ -57,8 +57,7 @@ mod tests {
 
     #[test]
     fn test_tree_map() {
-        let input =
-        "..##.......
+        let input = "..##.......
         #...#...#..
         .#....#..#.
         ..#.#...#.#
@@ -70,9 +69,12 @@ mod tests {
         #...##....#
         .#..#...#.#";
 
-        let mut grid = Grid::new(input.split_whitespace()
-            .map(|x| x.trim().to_string())
-            .collect());
+        let mut grid = Grid::new(
+            input
+                .split_whitespace()
+                .map(|x| x.trim().to_string())
+                .collect(),
+        );
 
         assert_eq!(grid.traverse_badly(1, 1), 2);
         assert_eq!(grid.traverse_badly(3, 1), 7);

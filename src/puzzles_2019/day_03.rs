@@ -1,7 +1,7 @@
-use std::cmp;
-use std::hash;
-use std::collections::HashSet;
 use crate::puzzle_input;
+use std::cmp;
+use std::collections::HashSet;
+use std::hash;
 
 pub fn run() {
     let input = puzzle_input::read_all_lines("./input/2019-d03-input1.txt");
@@ -19,7 +19,7 @@ pub fn run() {
 struct Point {
     x: i32,
     y: i32,
-    steps: i32
+    steps: i32,
 }
 impl hash::Hash for Point {
     fn hash<H: hash::Hasher>(&self, state: &mut H) {
@@ -35,8 +35,12 @@ impl cmp::PartialEq for Point {
 impl cmp::Eq for Point {}
 
 fn insert(point: Point, path: &mut HashSet<Point>) {
-    if ! path.insert(point) {
-        println!("Collision on {:?}. Original is {:?}", point, path.get(&point));
+    if !path.insert(point) {
+        println!(
+            "Collision on {:?}. Original is {:?}",
+            point,
+            path.get(&point)
+        );
     }
 }
 
@@ -46,10 +50,34 @@ fn next(last: Point, path: &mut HashSet<Point>, direction: char, n: i32) -> Poin
     for m in 1..=n {
         steps += 1;
         match direction {
-            'U' => pt = Point { x: last.x, y: last.y + m, steps: steps },
-            'D' => pt = Point { x: last.x, y: last.y - m, steps: steps },
-            'L' => pt = Point { x: last.x - m, y: last.y, steps: steps },
-            'R' => pt = Point { x: last.x + m, y: last.y, steps: steps },
+            'U' => {
+                pt = Point {
+                    x: last.x,
+                    y: last.y + m,
+                    steps: steps,
+                }
+            }
+            'D' => {
+                pt = Point {
+                    x: last.x,
+                    y: last.y - m,
+                    steps: steps,
+                }
+            }
+            'L' => {
+                pt = Point {
+                    x: last.x - m,
+                    y: last.y,
+                    steps: steps,
+                }
+            }
+            'R' => {
+                pt = Point {
+                    x: last.x + m,
+                    y: last.y,
+                    steps: steps,
+                }
+            }
             _ => {
                 panic!("Bad direction {}", direction);
             }
@@ -61,14 +89,25 @@ fn next(last: Point, path: &mut HashSet<Point>, direction: char, n: i32) -> Poin
 
 fn compute_path(input: &str) -> HashSet<Point> {
     let mut path: HashSet<Point> = HashSet::new();
-    let mut last = Point { x: 0, y: 0, steps: 0 };
+    let mut last = Point {
+        x: 0,
+        y: 0,
+        steps: 0,
+    };
 
     for elem in input.split(',') {
         let direction = elem.chars().next().unwrap();
-        let n = elem.trim_start_matches(|c| c == 'R' || c == 'L' || c == 'U' || c == 'D').parse::<i32>().unwrap();
+        let n = elem
+            .trim_start_matches(|c| c == 'R' || c == 'L' || c == 'U' || c == 'D')
+            .parse::<i32>()
+            .unwrap();
         last = next(last, &mut path, direction, n);
     }
-    println!("Final path has {:?} elements, last is {:?}", path.len(), last);
+    println!(
+        "Final path has {:?} elements, last is {:?}",
+        path.len(),
+        last
+    );
     path
 }
 

@@ -1,11 +1,9 @@
-
 use crate::puzzle_input;
 
 pub fn run() {
     let input = puzzle_input::read_string("./input/2019-d08-input1.txt");
     let mut img = Image::new(25, 6);
     img.read_string(&input);
-
 
     let mut min = std::i32::MAX;
     let mut result = 0;
@@ -26,7 +24,7 @@ struct Layer {
     data: Vec<i32>,
     zeros: i32,
     ones: i32,
-    twos: i32
+    twos: i32,
 }
 impl Layer {
     pub fn new(data: Vec<i32>) -> Layer {
@@ -37,8 +35,8 @@ impl Layer {
         for i in &data {
             match i {
                 0 => zeros += 1,
-                1 => ones +=1,
-                2 => twos +=1,
+                1 => ones += 1,
+                2 => twos += 1,
                 _ => {}
             }
         }
@@ -47,7 +45,7 @@ impl Layer {
             data: data,
             zeros: zeros,
             ones: ones,
-            twos: twos
+            twos: twos,
         }
     }
 }
@@ -56,26 +54,31 @@ impl Layer {
 struct Image {
     w: usize,
     h: usize,
-    layers: Vec<Layer>
+    layers: Vec<Layer>,
 }
 impl Image {
     pub fn new(w: usize, h: usize) -> Image {
         Image {
             w: w,
             h: h,
-            layers: Vec::new()
+            layers: Vec::new(),
         }
     }
 
     pub fn read_string(&mut self, input_ref: &str) {
-        let size  = (self.w * self.h) as usize;
+        let size = (self.w * self.h) as usize;
         let layers = input_ref.len() / size;
         println!("{:?} {:?} -> {:?}", size, input_ref.len(), layers);
         for n in 0..layers {
             let start = (n * size) as usize;
             let end = start + size;
             let section = &input_ref[start..end];
-            let l = Layer::new(section.chars().map(|c| c.to_digit(10).unwrap() as i32).collect());
+            let l = Layer::new(
+                section
+                    .chars()
+                    .map(|c| c.to_digit(10).unwrap() as i32)
+                    .collect(),
+            );
             //println!("made layer {} {:?}", n, l);
             self.layers.push(l);
         }
@@ -99,10 +102,10 @@ impl Image {
             for y in 0..self.h {
                 for x in 0..self.w {
                     match layer.data[i] {
-                        0 => { canvas[y][x] = ' ' }, // black
-                        1 => { canvas[y][x] = '*' }, // white
-                        2 => {},
-                        _ => { canvas[y][x] = '%' } // badness
+                        0 => canvas[y][x] = ' ', // black
+                        1 => canvas[y][x] = '*', // white
+                        2 => {}
+                        _ => canvas[y][x] = '%', // badness
                     }
                     i += 1;
                 }

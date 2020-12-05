@@ -12,9 +12,7 @@ fn run_program(input: &str, noun: i64, verb: i64) -> i64 {
     let trim = input.trim();
     // To do this, before running the program, replace position 1 with the value 12
     // and replace position 2 with the value 2.
-    let mut codes: Vec<i64> = trim.split(',')
-                                .map(|x| x.parse::<i64>().unwrap())
-                                .collect();
+    let mut codes: Vec<i64> = trim.split(',').map(|x| x.parse::<i64>().unwrap()).collect();
     codes[1] = noun;
     codes[2] = verb;
     // What value is left at position 0 after the program halts?
