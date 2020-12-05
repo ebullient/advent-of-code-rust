@@ -2,9 +2,10 @@ use crate::puzzle_input;
 
 pub fn run() {
     let input = puzzle_input::read_all_lines("./input/2020-d01-input1.txt");
-    let expenses: Vec<i64> = input.iter()
-                                .map(|x| x.trim().parse::<i64>().unwrap())
-                                .collect();
+    let expenses: Vec<i64> = input
+        .iter()
+        .map(|x| x.trim().parse::<i64>().unwrap())
+        .collect();
 
     println!("** Part 1 Final: {:?}", check_two_expenses(&expenses));
     println!("** Part 2 Final: {:?}", check_three_expenses(&expenses));
@@ -16,7 +17,7 @@ fn check_two_expenses(expenses: &Vec<i64>) -> i64 {
         let slice = &expenses[next..];
         for y in slice.iter() {
             if x + y == 2020 {
-                return x * y
+                return x * y;
             }
         }
     }
@@ -32,7 +33,7 @@ fn check_three_expenses(expenses: &Vec<i64>) -> i64 {
             let s2 = &expenses[n..];
             for z in s2.iter() {
                 if x + y + z == 2020 {
-                    return x * y * z
+                    return x * y * z;
                 }
             }
         }

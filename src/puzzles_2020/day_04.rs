@@ -1,9 +1,9 @@
-extern crate regex;
 extern crate lazy_static;
+extern crate regex;
 
 use crate::puzzle_input;
-use std::collections::HashMap;
 use regex::Regex;
+use std::collections::HashMap;
 
 pub fn run() {
     let input = puzzle_input::read_all_lines("./input/2020-d04-input1.txt");
@@ -12,11 +12,11 @@ pub fn run() {
     println!("** Part 1 Final: {:?}", valid);
 }
 
-#[derive(Debug,PartialEq)]
+#[derive(Debug, PartialEq)]
 enum Validity {
     Missing,
     Present,
-    Valid
+    Valid,
 }
 
 static REQ_KEYS: [&'static str; 7] = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
@@ -27,7 +27,11 @@ fn has_all_required<'a>(map: &HashMap<&'a str, Validity>) -> bool {
 }
 
 fn is_valid<'a>(map: &HashMap<&'a str, Validity>) -> bool {
-    REQ_KEYS.iter().filter(|x| *map.get(*x).or(MISSING).unwrap() != Validity::Valid).count() == 0
+    REQ_KEYS
+        .iter()
+        .filter(|x| *map.get(*x).or(MISSING).unwrap() != Validity::Valid)
+        .count()
+        == 0
 }
 
 fn check<'a>(map: &mut HashMap<&'a str, Validity>, line: &str) {
@@ -43,22 +47,33 @@ fn check<'a>(map: &mut HashMap<&'a str, Validity>, line: &str) {
     line.split_whitespace().for_each(|x| {
         for cap in RE.captures_iter(x) {
             match &cap[1] {
-                "byr" => map.insert("byr", if YR.is_match(&cap[2]) && in_year_range(&cap[2], 1920, 2002) {
+                "byr" => map.insert(
+                    "byr",
+                    if YR.is_match(&cap[2]) && in_year_range(&cap[2], 1920, 2002) {
                         Validity::Valid
                     } else {
                         Validity::Present
-                    }),
-                "iyr" => map.insert("iyr", if YR.is_match(&cap[2]) && in_year_range(&cap[2], 2010, 2020) {
+                    },
+                ),
+                "iyr" => map.insert(
+                    "iyr",
+                    if YR.is_match(&cap[2]) && in_year_range(&cap[2], 2010, 2020) {
                         Validity::Valid
                     } else {
                         Validity::Present
-                    }),
-                "eyr" => map.insert("eyr", if YR.is_match(&cap[2]) && in_year_range(&cap[2], 2020, 2030) {
+                    },
+                ),
+                "eyr" => map.insert(
+                    "eyr",
+                    if YR.is_match(&cap[2]) && in_year_range(&cap[2], 2020, 2030) {
                         Validity::Valid
                     } else {
                         Validity::Present
-                    }),
-                "hgt" => map.insert("hgt", if let Some(ht_caps) = HT.captures(&cap[2]) {
+                    },
+                ),
+                "hgt" => map.insert(
+                    "hgt",
+                    if let Some(ht_caps) = HT.captures(&cap[2]) {
                         if in_height_range(&ht_caps[1], &ht_caps[2]) {
                             Validity::Valid
                         } else {
@@ -66,24 +81,34 @@ fn check<'a>(map: &mut HashMap<&'a str, Validity>, line: &str) {
                         }
                     } else {
                         Validity::Present
-                    }),
-                "hcl" => map.insert("hcl", if HCL.is_match(&cap[2]) {
+                    },
+                ),
+                "hcl" => map.insert(
+                    "hcl",
+                    if HCL.is_match(&cap[2]) {
                         Validity::Valid
                     } else {
                         Validity::Present
-                    }),
-                "ecl" => map.insert("ecl", if ECL.is_match(&cap[2]) {
+                    },
+                ),
+                "ecl" => map.insert(
+                    "ecl",
+                    if ECL.is_match(&cap[2]) {
                         Validity::Valid
                     } else {
                         Validity::Present
-                    }),
-                "pid" => map.insert("pid", if PID.is_match(&cap[2]) {
+                    },
+                ),
+                "pid" => map.insert(
+                    "pid",
+                    if PID.is_match(&cap[2]) {
                         Validity::Valid
                     } else {
                         Validity::Present
-                    }),
+                    },
+                ),
                 "cid" => map.insert("cid", Validity::Present),
-                _ => None
+                _ => None,
             };
         }
     });
@@ -96,8 +121,7 @@ fn in_year_range(y: &str, min: i32, max: i32) -> bool {
 
 fn in_height_range(h: &str, u: &str) -> bool {
     let height = h.parse::<i32>().unwrap();
-    (u == "cm" && 150 <= height && height <= 193) ||
-    (u == "in" && 59 <= height && height <= 76 )
+    (u == "cm" && 150 <= height && height <= 193) || (u == "in" && 59 <= height && height <= 76)
 }
 
 fn validate(batch: &Vec<String>) -> (i32, i32) {

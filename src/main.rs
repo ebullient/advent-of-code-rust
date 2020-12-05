@@ -1,9 +1,10 @@
+mod puzzle_input;
 mod puzzles_2019;
 mod puzzles_2020;
-mod puzzle_input;
 
 extern crate getopts;
-#[macro_use] extern crate lazy_static;
+#[macro_use]
+extern crate lazy_static;
 use getopts::Options;
 use std::env;
 
@@ -22,8 +23,10 @@ fn main() {
     opts.optflag("h", "help", "print this help menu");
 
     let matches = match opts.parse(&args[1..]) {
-        Ok(m) => { m }
-        Err(f) => { panic!(f.to_string()) }
+        Ok(m) => m,
+        Err(f) => {
+            panic!(f.to_string())
+        }
     };
     if matches.opt_present("h") {
         print_usage(&program, opts);

@@ -1,7 +1,7 @@
-use petgraph::graphmap::UnGraphMap;
-use petgraph::algo::dijkstra;
-use petgraph::algo::astar;
 use crate::puzzle_input;
+use petgraph::algo::astar;
+use petgraph::algo::dijkstra;
+use petgraph::graphmap::UnGraphMap;
 
 pub fn run() {
     let input = puzzle_input::read_string("./input/2019-d06-input1.txt");

@@ -23,7 +23,9 @@ fn to_digits(input: i32) -> Vec<i32> {
     loop {
         result.push(x % 10);
         x /= 10;
-        if x == 0 {break}
+        if x == 0 {
+            break;
+        }
     }
     result.reverse();
     result
@@ -36,18 +38,18 @@ fn is_valid(password: i32) -> bool {
     let mut decrease = false;
 
     // 2. Two adjacent digits are the same (like 22 in 122345).
-    // 3. Going from left to right, the digits never decrease; 
+    // 3. Going from left to right, the digits never decrease;
     //    they only ever increase or stay the same (like 111123 or 135679).
     for i in 1..6 {
-        if input[i-1] > input[i] {
+        if input[i - 1] > input[i] {
             decrease = true;
-        } 
-        if input[i-1] == input[i] {
+        }
+        if input[i - 1] == input[i] {
             adjacent = true;
-        } 
+        }
     }
 
-    input.len() == 6 && adjacent && ! decrease
+    input.len() == 6 && adjacent && !decrease
 }
 
 fn is_really_valid(password: i32) -> bool {
@@ -58,16 +60,16 @@ fn is_really_valid(password: i32) -> bool {
     let mut decrease = false;
 
     // 2. Two adjacent digits are the same (like 22 in 122345).
-    // 4! the two adjacent matching digits are not part of a 
+    // 4! the two adjacent matching digits are not part of a
     //    larger group of matching digits.
-    // 3. Going from left to right, the digits never decrease; 
+    // 3. Going from left to right, the digits never decrease;
     //    they only ever increase or stay the same (like 111123 or 135679).
     for i in 1..6 {
-        if input[i-1] > input[i] {
+        if input[i - 1] > input[i] {
             decrease = true;
-        } 
+        }
 
-        if input[i-1] == input[i] {
+        if input[i - 1] == input[i] {
             in_a_row += 1;
         } else {
             if in_a_row == 2 {
@@ -80,7 +82,7 @@ fn is_really_valid(password: i32) -> bool {
         adjacent = true;
     }
 
-    input.len() == 6 && adjacent && ! decrease
+    input.len() == 6 && adjacent && !decrease
 }
 
 #[cfg(test)]
