@@ -15,6 +15,7 @@ pub fn run() {
     for n in 1..seats.len() - 2 {
         if seats[n + 2] - seats[n] != 2 {
             seat = seats[n] + 1;
+            break;
         }
     }
     println!("** Part 1 Final: {:?}", seats.pop().unwrap());

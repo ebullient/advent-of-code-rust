@@ -9,7 +9,7 @@ pub fn run() {
     let input = puzzle_input::read_all_lines("./input/2020-d04-input1.txt");
     let (required, valid) = validate(&input);
     println!("** Part 1 Final: {:?}", required);
-    println!("** Part 1 Final: {:?}", valid);
+    println!("** Part 2 Final: {:?}", valid);
 }
 
 #[derive(Debug, PartialEq)]
