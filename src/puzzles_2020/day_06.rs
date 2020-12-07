@@ -8,77 +8,29 @@ pub fn run() {
 }
 
 fn count_answers(batch: &Vec<String>) -> i32 {
-    let empty: Vec<String> = vec!["".to_string()];
-    let state: HashSet<char> = HashSet::new();
-
-    // chain an empty line at the end
+    let mut set: HashSet<char> = HashSet::new();
     batch
-        .iter()
-        .chain(empty.iter())
-        .scan(state, |state, x| {
-            if x.is_empty() {
-                let result = state.len();
-                state.clear();
-                Some(result as i32)
-            } else {
-                state.extend(x.chars());
-                Some(0)
-            }
+        .split(|x| x.is_empty())
+        .map(|group| {
+            set.clear();
+            group.iter().for_each(|x| set.extend(x.chars()));
+            set.len()
         })
-        .fold(0, |acc, x| acc + x)
-}
-
-#[derive(Debug)]
-struct IntersectState {
-    set: HashSet<char>,
-    entry: bool,
-}
-impl IntersectState {
-    pub fn clear(&mut self) {
-        self.set.clear();
-        self.entry = false;
-    }
-
-    pub fn intersect(&mut self, str: &String) {
-        if self.entry == false {
-            self.set.extend(str.chars());
-            self.entry = true;
-        } else {
-            let u: HashSet<char> = self.set.clone();
-            let v: HashSet<char> = str.chars().collect();
-            let i: HashSet<char> = u.intersection(&v).map(|x| *x).collect();
-            self.set.clear();
-            self.set.extend(i);
-        }
-    }
-
-    pub fn len(&self) -> usize {
-        self.set.len()
-    }
+        .sum::<usize>() as i32
 }
 
 fn count_intersection_answers(batch: &Vec<String>) -> i32 {
-    let empty: Vec<String> = vec!["".to_string()];
-    let state: IntersectState = IntersectState {
-        set: HashSet::new(),
-        entry: false,
-    };
-
-    // chain an empty line at the end
     batch
-        .iter()
-        .chain(empty.iter())
-        .scan(state, |state, x| {
-            if x.is_empty() {
-                let result = state.len();
-                state.clear();
-                Some(result as i32)
-            } else {
-                state.intersect(x);
-                Some(0)
-            }
+        .split(|x| x.is_empty())
+        .map(|group| {
+            let mut set: HashSet<char> = group[0].chars().collect();
+            group.iter().for_each(|x| {
+                let v: HashSet<char> = x.chars().collect();
+                set = set.intersection(&v).map(|x| *x).collect();
+            });
+            set.len()
         })
-        .fold(0, |acc, x| acc + x)
+        .sum::<usize>() as i32
 }
 
 #[cfg(test)]
