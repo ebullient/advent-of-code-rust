@@ -63,7 +63,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test() {
+    fn test_counting_bags() {
         let input = "light red bags contain 1 bright white bag, 2 muted yellow bags.
         dark orange bags contain 3 bright white bags, 4 muted yellow bags.
         bright white bags contain 1 shiny gold bag.
