@@ -31,8 +31,9 @@ fn apply_mask_to_address(mask: &str, val: u64) -> Vec<u64> {
             for value in values.iter_mut() {
                 let mut z = value.clone();
                 z.push('1');
-                value.push('0');
                 extra.push(z);
+
+                value.push('0');
             }
         } else {
             for value in values.iter_mut() {
