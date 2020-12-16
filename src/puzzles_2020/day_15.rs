@@ -40,23 +40,23 @@ mod tests {
 
     #[test]
     fn test_memory_1() {
-        assert_eq!(find_number(vec![0, 3, 6], 4), 0);
-        assert_eq!(find_number(vec![0, 3, 6], 7), 1);
-        assert_eq!(find_number(vec![0, 3, 6], 10), 0);
-        assert_eq!(find_number(vec![0, 3, 6], 2020), 436);
+        assert_eq!(find_number(&vec![0, 3, 6], 4), 0);
+        assert_eq!(find_number(&vec![0, 3, 6], 7), 1);
+        assert_eq!(find_number(&vec![0, 3, 6], 10), 0);
+        assert_eq!(find_number(&vec![0, 3, 6], 2020), 436);
 
-        assert_eq!(find_number(vec![1, 3, 2], 2020), 1);
-        assert_eq!(find_number(vec![2, 1, 3], 2020), 10);
-        assert_eq!(find_number(vec![1, 2, 3], 2020), 27);
+        assert_eq!(find_number(&vec![1, 3, 2], 2020), 1);
+        assert_eq!(find_number(&vec![2, 1, 3], 2020), 10);
+        assert_eq!(find_number(&vec![1, 2, 3], 2020), 27);
 
-        assert_eq!(find_number(vec![2, 3, 1], 2020), 78);
-        assert_eq!(find_number(vec![3, 2, 1], 2020), 438);
-        assert_eq!(find_number(vec![3, 1, 2], 2020), 1836);
+        assert_eq!(find_number(&vec![2, 3, 1], 2020), 78);
+        assert_eq!(find_number(&vec![3, 2, 1], 2020), 438);
+        assert_eq!(find_number(&vec![3, 1, 2], 2020), 1836);
     }
 
     #[test]
     fn test_memory_2() {
-        assert_eq!(find_number(vec![0, 3, 6], 30000000), 175594);
-        assert_eq!(find_number(vec![1, 3, 2], 30000000), 2578);
+        assert_eq!(find_number(&vec![0, 3, 6], 30000000), 175594);
+        assert_eq!(find_number(&vec![1, 3, 2], 30000000), 2578);
     }
 }
