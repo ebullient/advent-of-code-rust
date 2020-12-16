@@ -17,7 +17,7 @@ fn apply_mask_to_value(mask: &str, val: u64) -> u64 {
     let bval = format!("{:036b}", val);
     let mut result = String::with_capacity(bval.len());
     for (x, y) in mask.chars().zip(bval.chars()) {
-        result.push( if x == 'X' { y } else { x });
+        result.push(if x == 'X' { y } else { x });
     }
     u64::from_str_radix(result.as_str(), 2).unwrap()
 }
@@ -43,7 +43,8 @@ fn apply_mask_to_address(mask: &str, val: u64) -> Vec<u64> {
         values.extend(extra);
     }
 
-    values.iter()
+    values
+        .iter()
         .map(|x| u64::from_str_radix(x.as_str(), 2).unwrap())
         .collect()
 }
@@ -107,9 +108,9 @@ mod tests {
             mem[8] = 11
             mem[7] = 101
             mem[8] = 0"
-                .split('\n')
-                .map(|x| x.trim().to_string())
-                .collect();
+            .split('\n')
+            .map(|x| x.trim().to_string())
+            .collect();
 
         assert_eq!(run_init_program(&input, 1), 165);
     }
@@ -126,5 +127,4 @@ mod tests {
 
         assert_eq!(run_init_program(&input, 2), 208);
     }
-
 }

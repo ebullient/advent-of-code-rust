@@ -1,9 +1,16 @@
 use crate::puzzle_input;
 
 pub fn run() {
-    let (earliest, schedule) = read_bus_schedule(&puzzle_input::read_all_lines("./input/2020-d13-input1.txt"));
-    println!("** Part 1 Final: {:?}", find_earliest_bus(earliest,&schedule));
-    println!("** Part 2 Final: {:?}", find_earliest_bus_sequence(&schedule));
+    let (earliest, schedule) =
+        read_bus_schedule(&puzzle_input::read_all_lines("./input/2020-d13-input1.txt"));
+    println!(
+        "** Part 1 Final: {:?}",
+        find_earliest_bus(earliest, &schedule)
+    );
+    println!(
+        "** Part 2 Final: {:?}",
+        find_earliest_bus_sequence(&schedule)
+    );
 }
 
 // Each bus has an ID number that also indicates how often the bus leaves for the airport.
@@ -15,16 +22,24 @@ fn read_bus_schedule(input: &Vec<String>) -> (i64, Vec<Option<i64>>) {
     // The second line lists the bus IDs that are in service according to the shuttle company;
     // entries that show x must be out of service, so you decide to ignore them.
     let time = input[0].parse::<i64>().unwrap();
-    let buses: Vec<Option<i64>> = input[1].trim()
-            .split(',')
-            .map(|x| if x == "x" { None } else { Some(x.parse::<i64>().unwrap()) } )
-            .collect();
+    let buses: Vec<Option<i64>> = input[1]
+        .trim()
+        .split(',')
+        .map(|x| {
+            if x == "x" {
+                None
+            } else {
+                Some(x.parse::<i64>().unwrap())
+            }
+        })
+        .collect();
     println!("Time: {:?}, Buses: ${:?}", time, buses);
     (time, buses)
 }
 
 fn get_buses(schedule: &Vec<Option<i64>>) -> Vec<i64> {
-    schedule.iter()
+    schedule
+        .iter()
         .filter(|x| x.is_some())
         .map(|x| x.unwrap())
         .collect()
@@ -49,7 +64,9 @@ fn find_earliest_bus(earliest: i64, schedule: &Vec<Option<i64>>) -> i64 {
 
 // Part 2
 fn find_earliest_bus_sequence(schedule: &Vec<Option<i64>>) -> i64 {
-    let buses: Vec<(i64, i64)> = schedule.iter().enumerate()
+    let buses: Vec<(i64, i64)> = schedule
+        .iter()
+        .enumerate()
         .filter(|x| x.1.is_some())
         .map(|x| (x.0 as i64, x.1.unwrap() as i64))
         .collect();
