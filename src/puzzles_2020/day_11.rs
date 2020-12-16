@@ -1,6 +1,6 @@
 use crate::puzzle_input;
-use std::collections::HashMap;
 use std::collections::hash_map::Keys;
+use std::collections::HashMap;
 use std::ops::RangeInclusive;
 
 pub fn run() {
@@ -15,7 +15,7 @@ pub fn run() {
 struct Grid {
     data: HashMap<(usize, usize), char>,
     width: usize,
-    height: usize
+    height: usize,
 }
 
 impl Grid {
@@ -23,17 +23,17 @@ impl Grid {
         let mut data: HashMap<(usize, usize), char> = HashMap::new();
         for (y, row) in input.iter().enumerate() {
             for (x, col) in row.trim().chars().enumerate() {
-                data.insert((y,x), col);
+                data.insert((y, x), col);
             }
         }
         Grid {
             data: data,
             height: input.len(),
-            width: input[0].len()
+            width: input[0].len(),
         }
     }
 
-    fn get(&self, pt: (usize,usize)) -> char {
+    fn get(&self, pt: (usize, usize)) -> char {
         *self.data.get(&pt).unwrap()
     }
 
@@ -41,15 +41,15 @@ impl Grid {
         self.data.keys()
     }
 
-    fn put(&mut self, pt: (usize,usize), seat: char) {
+    fn put(&mut self, pt: (usize, usize), seat: char) {
         self.data.insert(pt, seat);
     }
 
     #[allow(dead_code)]
     fn dump(&self) {
-        for y in 0 .. self.height {
-            for x in 0 .. self.width {
-                print!("{}", self.data.get(&(y,x)).unwrap());
+        for y in 0..self.height {
+            for x in 0..self.width {
+                print!("{}", self.data.get(&(y, x)).unwrap());
             }
             println!("");
         }
@@ -85,7 +85,7 @@ fn box_step(start: &Grid) -> (Grid, i32) {
         let result = match seat {
             'L' => check_box_around(start, &box_pts, true),
             '#' => check_box_around(start, &box_pts, false),
-              _ => seat
+            _ => seat,
         };
         if result == '#' {
             occupied += 1;
@@ -98,7 +98,7 @@ fn box_step(start: &Grid) -> (Grid, i32) {
 fn box_range(i: usize, max: usize) -> RangeInclusive<usize> {
     std::ops::RangeInclusive::new(
         if i == 0 { 0 } else { i - 1 },
-        if i + 1 == max { i } else { i + 1 }
+        if i + 1 == max { i } else { i + 1 },
     )
 }
 
@@ -125,7 +125,7 @@ fn check_box_around(start: &Grid, pts: &Vec<(usize, usize)>, is_empty: bool) -> 
         if start.get(*pt) == '#' {
             occupied += 1;
             if occupied == 4 || is_empty {
-                return 'L'
+                return 'L';
             }
         }
     }
@@ -147,23 +147,40 @@ fn visible_step(start: &Grid) -> (Grid, i32) {
         // First visible empty/occupied seat in each direction
         let visible_seats = visible_seats(start, *point);
         let result = match seat {
-           'L' => if visible_seats == 0 { '#' } else { 'L' },
-           '#' => if visible_seats >= 5 { 'L' } else { '#' },
-             _ => seat
+            'L' => {
+                if visible_seats == 0 {
+                    '#'
+                } else {
+                    'L'
+                }
+            }
+            '#' => {
+                if visible_seats >= 5 {
+                    'L'
+                } else {
+                    '#'
+                }
+            }
+            _ => seat,
         };
         if result == '#' {
-           occupied += 1;
+            occupied += 1;
         }
         next.put(*point, result);
     }
     (next, occupied)
 }
 
-const OFFSETS: [(i32, i32); 8] =  [
-    (-1,-1), (-1,0), (-1,1),
-    (0,-1), (0,1),
-    (1,-1), (1,0), (1,1)];
-
+const OFFSETS: [(i32, i32); 8] = [
+    (-1, -1),
+    (-1, 0),
+    (-1, 1),
+    (0, -1),
+    (0, 1),
+    (1, -1),
+    (1, 0),
+    (1, 1),
+];
 
 fn visible_seats(grid: &Grid, point: (usize, usize)) -> i32 {
     let mut occupied = 0;
@@ -173,8 +190,7 @@ fn visible_seats(grid: &Grid, point: (usize, usize)) -> i32 {
     for offset in OFFSETS.iter() {
         let mut new_y = y + offset.0;
         let mut new_x = x + offset.1;
-        while new_y >= 0 && new_y < grid.height as i32 &&
-              new_x >= 0 && new_x < grid.width as i32 {
+        while new_y >= 0 && new_y < grid.height as i32 && new_x >= 0 && new_x < grid.width as i32 {
             let seat = grid.get((new_y as usize, new_x as usize));
             if seat != '.' {
                 if seat == '#' {

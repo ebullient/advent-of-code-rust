@@ -17,12 +17,15 @@ fn find_weakness(seq: &Vec<i64>, n: usize) -> i64 {
     let mut max = n;
     for i in n..seq.len() {
         // this will try all combinations (no early exit)
-        if 0 == seq[min..max].iter().combinations(2)
-                .map(|x| x[0] + x[1])
-                .filter(|x| *x == seq[i])
-                .count() {
-                    return seq[i];
-                }
+        if 0 == seq[min..max]
+            .iter()
+            .combinations(2)
+            .map(|x| x[0] + x[1])
+            .filter(|x| *x == seq[i])
+            .count()
+        {
+            return seq[i];
+        }
 
         min += 1;
         max += 1;
@@ -35,7 +38,7 @@ fn find_match(seq: &Vec<i64>, target: i64) -> i64 {
         for x in seq.windows(range) {
             if target == x.iter().sum::<i64>() {
                 if let MinMax(x, y) = x.iter().minmax() {
-                    return x + y
+                    return x + y;
                 }
             }
         }
@@ -68,9 +71,10 @@ mod tests {
             299
             277
             309
-            576".split('\n')
-            .map(|x| x.trim().parse::<i64>().unwrap())
-            .collect();
+            576"
+        .split('\n')
+        .map(|x| x.trim().parse::<i64>().unwrap())
+        .collect();
 
         assert_eq!(find_weakness(&input, 5), 127);
         assert_eq!(find_match(&input, 127), 62);

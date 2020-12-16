@@ -144,17 +144,16 @@ fn move_ferry_via_waypoint(input: Vec<String>) -> i32 {
         match i {
             'L' | 'R' => {
                 waypoint = rotate_waypoint(waypoint, &ferry_pos, n, i);
-            },
-            'N' => waypoint.adjust(Coord {x: 0,  y: n}),
-            'S' => waypoint.adjust(Coord {x: 0,  y: -n}),
-            'E' => waypoint.adjust(Coord {x: n,  y: 0}),
-            'W' => waypoint.adjust(Coord {x: -n, y: 0}),
+            }
+            'N' => waypoint.adjust(Coord { x: 0, y: n }),
+            'S' => waypoint.adjust(Coord { x: 0, y: -n }),
+            'E' => waypoint.adjust(Coord { x: n, y: 0 }),
+            'W' => waypoint.adjust(Coord { x: -n, y: 0 }),
             'F' => {
-                ferry_pos = ferry_pos + ( waypoint.offset * n );
+                ferry_pos = ferry_pos + (waypoint.offset * n);
                 waypoint.position = ferry_pos + waypoint.offset;
-            },
+            }
             _ => {}
-
         }
     }
 
