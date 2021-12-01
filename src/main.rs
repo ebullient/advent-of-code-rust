@@ -1,6 +1,7 @@
 mod puzzle_input;
 mod puzzles_2019;
 mod puzzles_2020;
+mod puzzles_2021;
 
 #[macro_use]
 extern crate lazy_static;
@@ -47,6 +48,7 @@ fn main() {
     match year {
         2019 => puzzles_2019::run(day),
         2020 => puzzles_2020::run(day),
+        2021 => puzzles_2021::run(day),
         // Handle the rest of cases
         _ => println!("Nothing to see here"),
     }
