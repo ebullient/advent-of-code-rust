@@ -1,5 +1,4 @@
 use crate::puzzle_input;
-//use std::collections::VecDeque;
 
 pub fn run() {
     let input = puzzle_input::read_all_lines("./input/2021-d01-input.txt");
