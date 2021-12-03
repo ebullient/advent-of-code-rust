@@ -1,14 +1,15 @@
 use crate::puzzle_input;
+use std::convert::TryInto;
 
 pub fn run() {
     let input: Vec<String> = puzzle_input::read_all_lines("./input/2021-d03-input.txt");
 
     let (gamma, epsilon) = count_bits(&input);
-    println!("** Part 1 Final: {:?}", product(&gamma, &epsilon));
+    println!("** Part 1 Final: {:?} == 841526", product(&gamma, &epsilon));
 
     let o2 = filter_bits(&input, gamma.chars().nth(0).unwrap(), '1', '1', '0');
     let co2 = filter_bits(&input, epsilon.chars().nth(0).unwrap(), '0', '0', '1');
-    println!("** Part 2 Final: {:?}", product(&o2, &co2));
+    println!("** Part 2 Final: {:?} == 4790390", product(&o2, &co2));
 }
 
 // Use the binary numbers to generate two new binary numbers:
@@ -18,22 +19,22 @@ pub fn run() {
 //  Each bit in the epsilon rate:
 //     the least common bit from each position is used.
 fn count_bits(report: &Vec<String>) -> (String, String) {
-    let example = report.get(0).unwrap();
-    let sum: Vec<i32> = vec![0; example.len()];
+    let width = report.get(0).unwrap().len();
+    let max: u32 = (report.len() / 2).try_into().unwrap();
+    let sum = vec![0; width];
 
     let result = report.iter().fold(sum, |mut acc, line| {
-        for (i, c) in line.chars().enumerate() {
-            acc[i] += c.to_digit(10).unwrap() as i32;
+        for (i, _) in line.chars().enumerate().filter(|(_, x)| *x == '1') {
+            acc[i] += 1;
         }
         acc
     });
 
+    // Keep the string values because I'm insane. Yes. Bit math is a thing.
     let mut gamma = String::new();
     let mut epsilon = String::new();
-    let length: i32 = report.len() as i32;
-
-    for i in 0..example.len() {
-        if result[i] > (length - result[i]) {
+    for i in 0..width {
+        if result[i] > max {
             gamma.push('1');
             epsilon.push('0');
         } else {
@@ -41,7 +42,6 @@ fn count_bits(report: &Vec<String>) -> (String, String) {
             epsilon.push('1');
         }
     }
-
     (gamma, epsilon)
 }
 
@@ -56,7 +56,7 @@ fn filter_bits(report: &Vec<String>, start: char, gt: char, eq: char, lt: char) 
 
     loop {
         filtered.retain(|y| y.chars().nth(i) == Some(x));
-        println!("{:?} {:?}, {:?}", i, x, filtered);
+        // println!("{:?} {:?}, {:?}", i, x, filtered);
         if filtered.len() == 1 {
             break;
         }
