@@ -29,19 +29,16 @@ struct Board {
 impl Board {
     pub fn new(iter: &mut Iter<String>) -> Board {
         let mut data: HashMap<i32, (usize, usize)> = HashMap::new();
-
         for i in 0..5 {
             let row: Vec<i32> = iter.next().unwrap()
                     .split(" ")
                     .filter(|x| !x.is_empty())
                     .map(|x| x.parse::<i32>().unwrap())
                     .collect();
-            //println!("row: {:?}", row);
             for (j, value) in row.iter().enumerate() {
                 data.insert(*value, (i, j));
             }
         }
-        //println!("{:?}", data);
 
         Board {
             data: data,
@@ -94,7 +91,6 @@ fn play<'a>(draw: &'a Vec<i32>, boards: &'a mut Vec<Board>, n: usize) -> (i32, &
         for i in 0..n {
             let bingo = boards[i].mark(*d);
             if bingo {
-                //println!("draw: {:?}, b: {:?}", d, boards[i]);
                 return (*d, &boards[i]);
             }
         }
@@ -163,6 +159,7 @@ mod tests {
         assert_eq!(27, draw.len());
 
         let n = boards.len();
+
         let (last, winner) = play(&draw, &mut boards, n);
         let (sum, total) = finish(last, &winner);
         assert_eq!(sum, 188);
@@ -171,10 +168,8 @@ mod tests {
         boards.iter_mut().for_each(|b| b.clear());
 
         let (last2, winner2) = play_through(&draw, &mut boards, n);
-        println!("result: {:?} {:?}", last2, winner2);
         let (sum2, total2) = finish(last2, &winner2);
         assert_eq!(sum2, 148);
         assert_eq!(total2, 1924);
-
     }
 }
