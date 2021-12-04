@@ -1,6 +1,8 @@
 use crate::puzzle_input;
 use std::slice::Iter;
 use std::collections::HashMap;
+use std::collections::HashSet;
+
 
 pub fn run() {
     let input: Vec<String> = puzzle_input::read_all_lines("./input/2021-d04-input.txt");
@@ -11,7 +13,11 @@ pub fn run() {
     let (_, total) = finish(last, &winner);
     println!("** Part 1 Final: {:?}", total);
 
-    println!("** Part 2 Final: {:?}", 0);
+    boards.iter_mut().for_each(|b| b.clear());
+
+    let (last2, winner2) = play_through(&draw, &mut boards, n);
+    let (_, total2) = finish(last2, &winner2);
+    println!("** Part 2 Final: {:?}", total2);
 }
 
 #[derive(Clone, Debug)]
@@ -19,7 +25,8 @@ struct Board {
     data: HashMap<i32, (usize, usize)>,
     marked: Vec<i32>,
     rows: [usize; 5],
-    cols: [usize; 5]
+    cols: [usize; 5],
+    bingo: bool
 }
 impl Board {
     pub fn new(iter: &mut Iter<String>) -> Board {
@@ -42,20 +49,32 @@ impl Board {
             data: data,
             marked: Vec::new(),
             rows: [0; 5],
-            cols: [0; 5]
+            cols: [0; 5],
+            bingo: false
         }
     }
 
     pub fn mark(&mut self, i: i32) -> bool {
+        if self.bingo {
+            return false;
+        }
         if let Some(place) = self.data.get(&i) {
             self.marked.push(i);
             self.cols[place.0] += 1;
             self.rows[place.1] += 1;
             if self.cols[place.0] == 5 || self.rows[place.1] == 5 {
-                return true
+                self.bingo = true;
+                return true;
             }
         }
         false
+    }
+
+    pub fn clear(&mut self) {
+        self.marked.clear();
+        self.cols.iter_mut().for_each(|m| *m = 0);
+        self.rows.iter_mut().for_each(|m| *m = 0);
+        self.bingo = false;
     }
 }
 
@@ -77,12 +96,30 @@ fn play<'a>(draw: &'a Vec<i32>, boards: &'a mut Vec<Board>, n: usize) -> (i32, &
         for i in 0..n {
             let bingo = boards[i].mark(*d);
             if bingo {
-                println!("draw: {:?}, b: {:?}", d, boards[i]);
+                //println!("draw: {:?}, b: {:?}", d, boards[i]);
                 return (*d, &boards[i]);
             }
         }
     }
     panic!("No winner?! We did it wrong.");
+}
+
+fn play_through<'a>(draw: &'a Vec<i32>, boards: &'a mut Vec<Board>, n: usize) -> (i32, &'a Board) {
+    let mut results: Vec<(i32, usize)> = Vec::new();
+    let mut seen: HashSet<usize> = HashSet::new();
+
+    for d in draw {
+        for i in 0..n {
+            let bingo = boards[i].mark(*d);
+            if bingo && seen.insert(i) {
+                results.push((*d, i));
+                //println!("bingo with draw: {:?}, i: {:?} --> r: {:?}", d, i, results);
+            }
+        }
+    }
+
+    let last = results.pop().unwrap();
+    (last.0, &boards[last.1])
 }
 
 // Start by finding the sum of all unmarked numbers on that board;
@@ -133,5 +170,14 @@ mod tests {
         let (sum, total) = finish(last, &winner);
         assert_eq!(sum, 188);
         assert_eq!(total, 4512);
+
+        boards.iter_mut().for_each(|b| b.clear());
+
+        let (last2, winner2) = play_through(&draw, &mut boards, n);
+        println!("result: {:?} {:?}", last2, winner2);
+        let (sum2, total2) = finish(last2, &winner2);
+        assert_eq!(sum2, 148);
+        assert_eq!(total2, 1924);
+
     }
 }
