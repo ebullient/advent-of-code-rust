@@ -1,8 +1,6 @@
 use crate::puzzle_input;
 use std::slice::Iter;
 use std::collections::HashMap;
-use std::collections::HashSet;
-
 
 pub fn run() {
     let input: Vec<String> = puzzle_input::read_all_lines("./input/2021-d04-input.txt");
@@ -106,12 +104,11 @@ fn play<'a>(draw: &'a Vec<i32>, boards: &'a mut Vec<Board>, n: usize) -> (i32, &
 
 fn play_through<'a>(draw: &'a Vec<i32>, boards: &'a mut Vec<Board>, n: usize) -> (i32, &'a Board) {
     let mut results: Vec<(i32, usize)> = Vec::new();
-    let mut seen: HashSet<usize> = HashSet::new();
 
     for d in draw {
         for i in 0..n {
             let bingo = boards[i].mark(*d);
-            if bingo && seen.insert(i) {
+            if bingo {
                 results.push((*d, i));
                 //println!("bingo with draw: {:?}, i: {:?} --> r: {:?}", d, i, results);
             }
