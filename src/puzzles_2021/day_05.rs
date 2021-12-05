@@ -60,14 +60,8 @@ impl Grid {
                     let counter = data.entry((x, y)).or_insert(0);
                     *counter += 1;
                     x += 1;
-                    if up {
-                        y += 1;
-                    } else {
-                        y -= 1;
-                    }
+                    y = if up { y + 1 } else { y - 1 };
                 }
-            } else {
-                println!("skipping line: {:?} -- ({:?},{:?}) -> ({:?},{:?})", line, x1, y1, x2, y2);
             }
         }
 
