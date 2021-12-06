@@ -1,6 +1,8 @@
 use crate::puzzle_input;
 
 pub fn run() {
+    let input: Vec<String> = puzzle_input::read_all_lines("./input/2021-d*-input.txt");
+
     println!("** Part 1 Final: {:?}", 0);
     println!("** Part 2 Final: {:?}", 0);
 }
@@ -10,5 +12,11 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test() {}
+    fn test() {
+        let input: Vec<String> = ""
+                    .split('\n')
+                    .map(|x| x.trim().to_string())
+                    .collect();
+
+    }
 }
