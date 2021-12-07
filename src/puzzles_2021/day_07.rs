@@ -26,16 +26,27 @@ fn calculate_min_fuel(input: &mut Vec<i32>) -> (i32, i32) {
     println!("mean: {:?} {:?}", m1, m2);
 
     let single = input.iter().map(|x| (median - x).abs()).sum();
-    let (exp1, exp2) = input.iter().map(|x| {
+
+    let mut exp = i32::MAX;
+    for i in 0 .. input.len() / 2 {
+        let (x1, x2) = triangle(input, m1 - i as i32, m2 + i as i32);
+        let next = cmp::min(x1, x2);
+        if next >= exp {
+            break;
+        }
+        exp = next;
+    }
+    (single, exp)
+}
+
+fn triangle(input: &mut Vec<i32>, m1: i32, m2: i32) -> (i32, i32) {
+    input.iter().map(|x| {
         let n1 = (m1 - x).abs();
         let n2 = (m2 - x).abs();
         ((n1 * (n1 + 1)) / 2 as i32, (n2 * (n2 + 1)) / 2 as i32)
     }).reduce(|accum, item| {
         (accum.0 + item.0, accum.1 + item.1)
-    }).unwrap();
-
-    // let exp = 0;
-    (single, cmp::min(exp1, exp2))
+    }).unwrap()
 }
 
 #[cfg(test)]
