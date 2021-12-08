@@ -25,14 +25,14 @@ fn count_unique(input: &Vec<(Vec<String>, Vec<String>)>) -> i32 {
 //    ONE: [usize; 2]   = [      2,       5   ];
 //    SEVEN: [usize; 3] = [0,    2,       5   ];
 //    FOUR: [usize; 4]  = [   1, 2, 3,    5   ];
-const TWO: [usize; 5]   = [0,    2, 3, 4,    6];
-const THREE: [usize; 5] = [0,    2, 3,    5, 6];
-const FIVE: [usize; 5]  = [0, 1,    3,    5, 6];
-const SIX: [usize; 6]   = [0, 1,    3, 4, 5, 6];
-const ZERO: [usize; 6]  = [0, 1, 2,    4, 5, 6];
-const NINE: [usize; 6]  = [0, 1, 2, 3,    5, 6];
+//    TWO: [usize; 5]   = [0,    2, 3, 4,    6];
+//    THREE: [usize; 5] = [0,    2, 3,    5, 6];
+//    FIVE: [usize; 5]  = [0, 1,    3,    5, 6];
+//    SIX: [usize; 6]   = [0, 1,    3, 4, 5, 6];
+//    ZERO: [usize; 6]  = [0, 1, 2,    4, 5, 6];
+//    NINE: [usize; 6]  = [0, 1, 2, 3,    5, 6];
 
-fn decipher(input: &Vec<String>) -> HashMap<char, usize> {
+fn decipher(input: &Vec<String>) -> HashMap<char, char> {
     let mut possible = vec![String::from("abcdefg"); 7];
     let mut actual = [' '; 7];
 
@@ -68,38 +68,31 @@ fn decipher(input: &Vec<String>) -> HashMap<char, usize> {
 
     let mut map = HashMap::new();
     for (i, x) in possible.iter().enumerate() {
-        map.insert(x.chars().next().unwrap(), i as usize);
+        map.insert(x.chars().next().unwrap(), char::from_digit(i as u32, 10).unwrap());
     }
     map
 }
 
-fn decode(map: &HashMap<char, usize>, input: &Vec<String>) -> i32 {
+fn decode(map: &HashMap<char, char>, input: &Vec<String>) -> i32 {
     let mut number = String::new();
     for code in input {
-        let mut wires: Vec<usize> = code.chars()
+        let wires: String = code.chars()
                 .map(|x| *map.get(&x).unwrap())
+                .sorted()
                 .collect();
-        wires.sort();
-        match wires.len() {
-            2 => number.push('1'),
-            3 => number.push('7'),
-            4 => number.push('4'),
-            7 => number.push('8'),
-            _ => {
-                if &TWO == &wires[..] {
-                    number.push('2');
-                } else if &THREE == &wires[..] {
-                    number.push('3');
-                } else if &FIVE == &wires[..] {
-                    number.push('5');
-                } else if &SIX == &wires[..] {
-                    number.push('6');
-                } else if &ZERO == &wires[..] {
-                    number.push('0');
-                } else if &NINE == &wires[..] {
-                    number.push('9');
-                }
-            }
+
+        match wires.as_str() {
+            "25" => number.push('1'),
+            "025" => number.push('7'),
+            "1235" => number.push('4'),
+            "02346" => number.push('2'),
+            "02356" => number.push('3'),
+            "01356" => number.push('5'),
+            "013456" => number.push('6'),
+            "012456" => number.push('0'),
+            "012356" => number.push('9'),
+            "0123456" => number.push('8'),
+            _ => panic!()
         }
     }
     number.parse::<i32>().unwrap()
