@@ -63,7 +63,5 @@ mod tests {
         let (single, exp) = calculate_min_fuel(&mut input);
         assert_eq!(37, single);
         assert_eq!(168, exp);
-        assert_eq!(0, exp);
-
     }
 }

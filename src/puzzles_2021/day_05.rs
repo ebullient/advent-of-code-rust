@@ -98,7 +98,7 @@ mod tests {
 
     #[test]
     fn test() {
-        let input: Vec<String> = "0,9 -> 5,9
+        let input: Vec<String> = puzzle_input::split_string("0,9 -> 5,9
         8,0 -> 0,8
         9,4 -> 3,4
         2,2 -> 2,1
@@ -107,10 +107,7 @@ mod tests {
         0,9 -> 2,9
         3,4 -> 1,4
         0,0 -> 8,8
-        5,5 -> 8,2"
-            .split('\n')
-            .map(|x| x.trim().to_string())
-            .collect();
+        5,5 -> 8,2");
 
         let grid = Grid::new(&input, false);
         grid.dump();

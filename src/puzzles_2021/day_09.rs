@@ -127,19 +127,15 @@ mod tests {
 
     #[test]
     fn test() {
-        let input: Vec<String> = "2199943210
+        let input: Vec<String> = puzzle_input::split_string("2199943210
             3987894921
             9856789892
             8767896789
-            9899965678"
-                    .split('\n')
-                    .map(|x| x.trim().to_string())
-                    .collect();
+            9899965678");
 
         let grid = Grid::new(&input);
         grid.dump();
         assert_eq!(15, grid.find_risk());
         assert_eq!(1134, grid.find_basins());
-        assert_eq!(false, true);
     }
 }

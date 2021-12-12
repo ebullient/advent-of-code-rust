@@ -104,7 +104,7 @@ mod tests {
         assert_eq!(995444,  completed_score(&to_vec("]]}}]}]}>")));
         assert_eq!(294,     completed_score(&to_vec("])}>")));
 
-        let input: Vec<String> = "[({(<(())[]>[[{[]{<()<>>
+        let input: Vec<String> = puzzle_input::split_string("[({(<(())[]>[[{[]{<()<>>
             [(()[<>])]({[<{<<[]>>(
             {([(<{}[<>[]}>{[]{[(<()>
             (((({<>}<{<{<>}{[]{[]{}
@@ -113,10 +113,7 @@ mod tests {
             {<[[]]>}<{[{[{[]{()[[[]
             [<(<(<(<{}))><([]([]()
             <{([([[(<>()){}]>(<<{{
-            <{([{{}}[<[[[<>{}]]]>[]]"
-                    .split('\n')
-                    .map(|x| x.trim().to_string())
-                    .collect();
+            <{([{{}}[<[[[<>{}]]]>[]]");
 
         let parsed: Vec<(Option<char>, Option<Vec<char>>)> = input.iter()
             .map(|x| parse(x))

@@ -89,21 +89,18 @@ mod tests {
 
     #[test]
     fn test() {
-        let input: Vec<String> = "00100
-        11110
-        10110
-        10111
-        10101
-        01111
-        00111
-        11100
-        10000
-        11001
-        00010
-        01010"
-            .split('\n')
-            .map(|x| x.trim().to_string())
-            .collect();
+        let input: Vec<String> = puzzle_input::split_string("00100
+            11110
+            10110
+            10111
+            10101
+            01111
+            00111
+            11100
+            10000
+            11001
+            00010
+            01010");
 
         let (gamma, epsilon) = count_bits(&input);
         assert_eq!("10110", gamma);

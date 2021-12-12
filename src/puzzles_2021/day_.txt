@@ -13,10 +13,7 @@ mod tests {
 
     #[test]
     fn test() {
-        let input: Vec<String> = ""
-                    .split('\n')
-                    .map(|x| x.trim().to_string())
-                    .collect();
+        let input: Vec<String> = puzzle_input::split_string("");
 
     }
 }

@@ -131,7 +131,7 @@ mod tests {
 
     #[test]
     fn test() {
-        let input: Vec<String> = "7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
+        let input: Vec<String> = puzzle_input::split_string("7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
 
         22 13 17 11 0
          8  2 23  4 24
@@ -149,10 +149,7 @@ mod tests {
         10 16 15  9 19
         18 8 23 26 20
         22 11 13  6  5
-         2  0 12  3  7"
-            .split('\n')
-            .map(|x| x.trim().to_string())
-            .collect();
+         2  0 12  3  7");
 
         let (draw, mut boards) = parse_input(&input);
         assert_eq!(3, boards.len());

@@ -97,15 +97,12 @@ mod tests {
 
     #[test]
     fn test() {
-        let input: Vec<String> = "forward 5
-        down 5
-        forward 8
-        up 3
-        down 8
-        forward 2"
-            .split('\n')
-            .map(|x| x.trim().to_string())
-            .collect();
+        let input: Vec<String> = puzzle_input::split_string("forward 5
+            down 5
+            forward 8
+            up 3
+            down 8
+            forward 2");
 
         let p = find_position(&input);
         assert_eq!(p.h, 15);
