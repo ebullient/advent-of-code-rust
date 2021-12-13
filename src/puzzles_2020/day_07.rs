@@ -1,6 +1,4 @@
 use crate::puzzle_input;
-extern crate lazy_static;
-extern crate regex;
 
 use petgraph::algo::has_path_connecting;
 use petgraph::graphmap::DiGraphMap;

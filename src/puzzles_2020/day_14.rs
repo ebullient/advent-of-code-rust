@@ -1,6 +1,3 @@
-extern crate lazy_static;
-extern crate regex;
-
 use crate::puzzle_input;
 use regex::Regex;
 use std::collections::HashMap;

@@ -64,6 +64,10 @@ pub trait Visitor {
     fn is_visiting(&mut self, n: &str) -> bool;
 }
 
+lazy_static! {
+    static ref LOWER: Regex = Regex::new(r"[a-z]+").unwrap();
+}
+
 #[derive(Clone, Debug)]
 pub struct DefaultVisitor {
     visiting: HashMap<String, bool>
@@ -77,9 +81,6 @@ impl DefaultVisitor {
 }
 impl Visitor for DefaultVisitor {
     fn set_visiting(&mut self, n: &str, visit: bool) {
-        lazy_static! {
-            static ref LOWER: Regex = Regex::new(r"[a-z]+").unwrap();
-        }
         if LOWER.is_match(n) {
             self.visiting.insert(n.to_string(), visit);
         }
@@ -108,9 +109,6 @@ impl PermissiveVisitor {
 }
 impl Visitor for PermissiveVisitor {
     fn set_visiting(&mut self, n: &str, visit: bool) {
-        lazy_static! {
-            static ref LOWER: Regex = Regex::new(r"[a-z]+").unwrap();
-        }
         if LOWER.is_match(n) {
             if visit {
                 if let Some(prev) = self.visiting.insert(n.to_string(), visit) {
