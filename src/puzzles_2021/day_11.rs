@@ -7,22 +7,21 @@ use std::ops::RangeInclusive;
 pub fn run() {
     let mut grid = Grid::new(&puzzle_input::read_all_lines("./input/2021-d11-input.txt"));
 
-    for _ in 0..100 {
-        grid.step();
-    }
-
-    println!("** Part 1 Final: {:?}", grid.flashes);
-
-    // reset
-    grid = Grid::new(&puzzle_input::read_all_lines("./input/2021-d11-input.txt"));
-
+    let mut flashes_at_100 = 0;
     let mut flashes = 0;
     let mut i = 0;
     while flashes != 100 {
+        if i == 100 {
+            flashes_at_100 = grid.flashes;
+        }
         flashes = grid.step();
         i += 1;
     }
+
+    println!("** Part 1 Final: {:?}", flashes_at_100);
+    assert_eq!(1625, flashes_at_100);
     println!("** Part 2 Final: {:?}", i);
+    assert_eq!(244, i);
 }
 
 fn box_range(i: usize, max: usize) -> RangeInclusive<usize> {
