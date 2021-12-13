@@ -9,7 +9,7 @@ mod day_08;
 mod day_09;
 mod day_10;
 mod day_11;
-// mod day_12;
+mod day_12;
 // mod day_13;
 // mod day_14;
 // mod day_15;
@@ -28,7 +28,7 @@ pub fn run(day: i32) {
         9 => day_09::run(),
         10 => day_10::run(),
         11 => day_11::run(),
-        // 12 => day_12::run(),
+        12 => day_12::run(),
         // 13 => day_13::run(),
         // 14 => day_14::run(),
         // 15 => day_15::run(),
