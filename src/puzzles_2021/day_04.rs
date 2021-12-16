@@ -1,6 +1,6 @@
 use crate::puzzle_input;
-use std::slice::Iter;
 use std::collections::HashMap;
+use std::slice::Iter;
 
 pub fn run() {
     let input: Vec<String> = puzzle_input::read_all_lines("./input/2021-d04-input.txt");
@@ -24,17 +24,19 @@ struct Board {
     marked: Vec<i32>,
     rows: [usize; 5],
     cols: [usize; 5],
-    bingo: bool
+    bingo: bool,
 }
 impl Board {
     pub fn new(iter: &mut Iter<String>) -> Board {
         let mut data: HashMap<i32, (usize, usize)> = HashMap::new();
         for i in 0..5 {
-            let row: Vec<i32> = iter.next().unwrap()
-                    .split(" ")
-                    .filter(|x| !x.is_empty())
-                    .map(|x| x.parse::<i32>().unwrap())
-                    .collect();
+            let row: Vec<i32> = iter
+                .next()
+                .unwrap()
+                .split(" ")
+                .filter(|x| !x.is_empty())
+                .map(|x| x.parse::<i32>().unwrap())
+                .collect();
             for (j, value) in row.iter().enumerate() {
                 data.insert(*value, (i, j));
             }
@@ -45,7 +47,7 @@ impl Board {
             marked: Vec::new(),
             rows: [0; 5],
             cols: [0; 5],
-            bingo: false
+            bingo: false,
         }
     }
 
@@ -76,11 +78,14 @@ impl Board {
 fn parse_input(input: &Vec<String>) -> (Vec<i32>, Vec<Board>) {
     let mut boards: Vec<Board> = Vec::new();
     let mut iter = input.iter();
-    let draw: Vec<i32> = iter.next().unwrap()
-            .split(",")
-            .map(|x| x.parse::<i32>().unwrap())
-            .collect();
-    while let Some(_) = iter.next() { // blank line (break if None)
+    let draw: Vec<i32> = iter
+        .next()
+        .unwrap()
+        .split(",")
+        .map(|x| x.parse::<i32>().unwrap())
+        .collect();
+    while let Some(_) = iter.next() {
+        // blank line (break if None)
         boards.push(Board::new(&mut iter));
     }
     (draw, boards)
@@ -118,7 +123,9 @@ fn play_through<'a>(draw: &'a Vec<i32>, boards: &'a mut Vec<Board>, n: usize) ->
 // Start by finding the sum of all unmarked numbers on that board;
 // Then, multiply that sum by the number that was last called.
 fn finish<'a>(draw: i32, board: &'a Board) -> (i32, i32) {
-    let unmarked: i32 = board.data.keys()
+    let unmarked: i32 = board
+        .data
+        .keys()
         .map(|x| *x)
         .filter(|x| !board.marked.contains(x))
         .sum();
@@ -131,7 +138,8 @@ mod tests {
 
     #[test]
     fn test() {
-        let input: Vec<String> = puzzle_input::split_string("7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
+        let input: Vec<String> = puzzle_input::split_string(
+            "7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
 
         22 13 17 11 0
          8  2 23  4 24
@@ -149,7 +157,8 @@ mod tests {
         10 16 15  9 19
         18 8 23 26 20
         22 11 13  6  5
-         2  0 12  3  7");
+         2  0 12  3  7",
+        );
 
         let (draw, mut boards) = parse_input(&input);
         assert_eq!(3, boards.len());

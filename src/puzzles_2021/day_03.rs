@@ -61,15 +61,18 @@ fn filter_bits(report: &Vec<String>, start: char, gt: char, eq: char, lt: char) 
             break;
         }
         i += 1;
-        let count: i32 = filtered.iter().map(|line| line.chars().nth(i).unwrap().to_digit(10).unwrap() as i32).sum();
+        let count: i32 = filtered
+            .iter()
+            .map(|line| line.chars().nth(i).unwrap().to_digit(10).unwrap() as i32)
+            .sum();
         let length: i32 = filtered.len() as i32;
         x = if count > (length - count) {
-                gt
-            } else if count == (length - count) {
-                eq
-            } else  {
-                lt
-            };
+            gt
+        } else if count == (length - count) {
+            eq
+        } else {
+            lt
+        };
     }
 
     filtered.get(0).unwrap().to_string()
@@ -89,7 +92,8 @@ mod tests {
 
     #[test]
     fn test() {
-        let input: Vec<String> = puzzle_input::split_string("00100
+        let input: Vec<String> = puzzle_input::split_string(
+            "00100
             11110
             10110
             10111
@@ -100,14 +104,21 @@ mod tests {
             10000
             11001
             00010
-            01010");
+            01010",
+        );
 
         let (gamma, epsilon) = count_bits(&input);
         assert_eq!("10110", gamma);
         assert_eq!("01001", epsilon);
         assert_eq!(198, product(&gamma, &epsilon));
 
-        assert_eq!("10111", filter_bits(&input, gamma.chars().nth(0).unwrap(), '1', '1', '0'));
-        assert_eq!("01010", filter_bits(&input, epsilon.chars().nth(0).unwrap(), '0', '0', '1'));
+        assert_eq!(
+            "10111",
+            filter_bits(&input, gamma.chars().nth(0).unwrap(), '1', '1', '0')
+        );
+        assert_eq!(
+            "01010",
+            filter_bits(&input, epsilon.chars().nth(0).unwrap(), '0', '0', '1')
+        );
     }
 }

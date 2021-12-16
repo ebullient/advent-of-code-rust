@@ -1,6 +1,6 @@
 use crate::puzzle_input;
-use regex::Regex;
 use petgraph::graphmap::UnGraphMap;
+use regex::Regex;
 use std::collections::HashMap;
 
 pub fn run() {
@@ -41,9 +41,14 @@ fn count_paths(graph: &UnGraphMap<&str, i32>) -> usize {
     all.len()
 }
 
-fn dfs(graph: &UnGraphMap<&str, i32>, visitor: &mut dyn Visitor,
-    current: &mut Vec<String>, all: &mut Vec<Vec<String>>, b: &str, end: &str) {
-
+fn dfs(
+    graph: &UnGraphMap<&str, i32>,
+    visitor: &mut dyn Visitor,
+    current: &mut Vec<String>,
+    all: &mut Vec<Vec<String>>,
+    b: &str,
+    end: &str,
+) {
     visitor.set_visiting(b, true);
     if b == end {
         all.push(current.to_vec());
@@ -70,12 +75,12 @@ lazy_static! {
 
 #[derive(Clone, Debug)]
 pub struct DefaultVisitor {
-    visiting: HashMap<String, bool>
+    visiting: HashMap<String, bool>,
 }
 impl DefaultVisitor {
     pub fn new() -> DefaultVisitor {
         DefaultVisitor {
-            visiting: HashMap::new()
+            visiting: HashMap::new(),
         }
     }
 }
@@ -88,7 +93,7 @@ impl Visitor for DefaultVisitor {
 
     fn is_visiting(&mut self, n: &str) -> bool {
         if let Some(x) = self.visiting.get(n) {
-            return *x
+            return *x;
         }
         false
     }
@@ -97,13 +102,13 @@ impl Visitor for DefaultVisitor {
 #[derive(Clone, Debug)]
 pub struct PermissiveVisitor {
     visiting: HashMap<String, bool>,
-    twice: Option<String>
+    twice: Option<String>,
 }
 impl PermissiveVisitor {
     pub fn new() -> PermissiveVisitor {
         PermissiveVisitor {
             visiting: HashMap::new(),
-            twice: None
+            twice: None,
         }
     }
 }
@@ -126,10 +131,10 @@ impl Visitor for PermissiveVisitor {
 
     fn is_visiting(&mut self, n: &str) -> bool {
         if "start" == n {
-            return true
+            return true;
         }
         if let Some(x) = self.visiting.get(n) {
-            return *x && self.twice != None
+            return *x && self.twice != None;
         }
         false
     }
@@ -141,18 +146,21 @@ mod tests {
 
     #[test]
     fn test() {
-        let input: Vec<String> = puzzle_input::split_string("start-A
+        let input: Vec<String> = puzzle_input::split_string(
+            "start-A
             start-b
             A-c
             A-b
             b-d
             A-end
-            b-end");
+            b-end",
+        );
         let g = parse(&input);
         assert_eq!(10, count_paths(&g));
         assert_eq!(36, count_paths_more_caves(&g));
 
-        let input: Vec<String> = puzzle_input::split_string("dc-end
+        let input: Vec<String> = puzzle_input::split_string(
+            "dc-end
             HN-start
             start-kj
             dc-start
@@ -161,12 +169,14 @@ mod tests {
             HN-end
             kj-sa
             kj-HN
-            kj-dc");
+            kj-dc",
+        );
         let g = parse(&input);
         assert_eq!(19, count_paths(&g));
         assert_eq!(103, count_paths_more_caves(&g));
 
-        let input: Vec<String> = puzzle_input::split_string("fs-end
+        let input: Vec<String> = puzzle_input::split_string(
+            "fs-end
             he-DX
             fs-he
             start-DX
@@ -183,10 +193,10 @@ mod tests {
             he-WI
             zg-he
             pj-fs
-            start-RW");
+            start-RW",
+        );
         let g = parse(&input);
         assert_eq!(226, count_paths(&g));
         assert_eq!(3509, count_paths_more_caves(&g));
-
     }
 }

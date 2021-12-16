@@ -36,7 +36,5 @@ where
 
 #[allow(dead_code)]
 pub fn split_string(input: &str) -> Vec<String> {
-    input.split('\n')
-        .map(|x| x.trim().to_string())
-        .collect()
+    input.split('\n').map(|x| x.trim().to_string()).collect()
 }

@@ -40,7 +40,10 @@ impl ops::Sub for Point {
     fn sub(self, rhs: Point) -> Self::Output {
         // because 0,0 is top left instead of bottom left,
         // reverse the y values. seems hacky: any better way to do this?
-        Point{ x: self.x - rhs.x, y: rhs.y - self.y }
+        Point {
+            x: self.x - rhs.x,
+            y: rhs.y - self.y,
+        }
     }
 }
 
@@ -57,7 +60,8 @@ fn find_asteroids(data: &Vec<Point>, src: &Point) -> usize {
 }
 
 fn blast_asteroids(data: &Vec<Point>, src: &Point) -> Vec<Point> {
-    let mut list: Vec<(f64, i32, Point)> = data.iter()
+    let mut list: Vec<(f64, i32, Point)> = data
+        .iter()
         .filter(|p| *p != src)
         .map(|p| {
             let diff = *p - *src;

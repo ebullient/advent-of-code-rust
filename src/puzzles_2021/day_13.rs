@@ -1,6 +1,6 @@
 use crate::puzzle_input;
-use std::collections::HashSet;
 use std::cmp;
+use std::collections::HashSet;
 
 pub fn run() {
     let input: Vec<String> = puzzle_input::read_all_lines("./input/2021-d13-input.txt");
@@ -70,7 +70,13 @@ impl Paper {
 
     fn fold(&mut self, axis: char, index: usize) {
         let all: HashSet<_> = self.dots.iter().cloned().collect();
-        self.dots.retain(|pt| if axis == 'x' { pt.1 < index } else { pt.0 < index });
+        self.dots.retain(|pt| {
+            if axis == 'x' {
+                pt.1 < index
+            } else {
+                pt.0 < index
+            }
+        });
         let diff: HashSet<_> = all.difference(&self.dots).cloned().collect();
 
         for pt in &diff {
@@ -78,7 +84,7 @@ impl Paper {
                 self.dots.insert((pt.0, index - (pt.1 - index)));
                 self.width = index;
             } else {
-                self.dots.insert((index - (pt.0 - index), pt.1 ));
+                self.dots.insert((index - (pt.0 - index), pt.1));
                 self.height = index;
             }
         }
@@ -106,7 +112,8 @@ mod tests {
 
     #[test]
     fn test() {
-        let input: Vec<String> = puzzle_input::split_string("6,10
+        let input: Vec<String> = puzzle_input::split_string(
+            "6,10
             0,14
             9,10
             0,3
@@ -126,7 +133,8 @@ mod tests {
             9,0
 
             fold along y=7
-            fold along x=5");
+            fold along x=5",
+        );
 
         let mut paper = Paper::new(&input);
         paper.dump();

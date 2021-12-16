@@ -21,10 +21,15 @@ pub fn run() {
     rules.find_eligible_fields(&tickets);
     let field_order = rules.find_field_order();
 
-    println!("** Part 2 Final: {:?}", field_order.iter().enumerate()
-        .filter(|(_, e)| e.starts_with("departure"))
-        .map(|(i, _)| my_values[i] as u64)
-        .product::<u64>());
+    println!(
+        "** Part 2 Final: {:?}",
+        field_order
+            .iter()
+            .enumerate()
+            .filter(|(_, e)| e.starts_with("departure"))
+            .map(|(i, _)| my_values[i] as u64)
+            .product::<u64>()
+    );
 }
 
 fn parse_input(input: &str) -> (Rules, Ticket, Vec<Ticket>) {
@@ -51,17 +56,20 @@ fn to_u32(s: Option<Match>) -> u32 {
 }
 
 fn validate(rules: &Rules, tickets: &Vec<Ticket>) -> u32 {
-    tickets.iter().map(|x| {
-        let (_, sum) = x.validate(&rules);
-        sum
-    }).sum()
+    tickets
+        .iter()
+        .map(|x| {
+            let (_, sum) = x.validate(&rules);
+            sum
+        })
+        .sum()
 }
 
 #[derive(Debug)]
 struct Rules {
     bounds: HashMap<String, Vec<RangeInclusive<u32>>>,
     placement: HashMap<String, Vec<usize>>,
-    num_fields: usize
+    num_fields: usize,
 }
 impl Rules {
     fn new(input: &str) -> Rules {
@@ -71,7 +79,7 @@ impl Rules {
         let mut result = Rules {
             bounds: HashMap::new(),
             placement: HashMap::new(),
-            num_fields: 0
+            num_fields: 0,
         };
         for line in input.lines() {
             if let Some(x) = RE.captures(line.trim()) {
@@ -89,8 +97,9 @@ impl Rules {
         let all_tickets = tickets.len();
         for (key, b) in self.bounds.iter() {
             let ok_index = self.placement.entry(key.to_string()).or_insert(vec![]);
-            for i in 0 .. self.num_fields {
-                let valid = tickets.iter()
+            for i in 0..self.num_fields {
+                let valid = tickets
+                    .iter()
                     .map(|x| x.fields[i])
                     .filter(|x| b.iter().any(|y| y.contains(x)))
                     .count();
@@ -104,7 +113,7 @@ impl Rules {
 
     fn find_field_order(&mut self) -> Vec<String> {
         let mut field_names: Vec<String> = vec!["".to_string(); self.num_fields];
-        for _ in 0 .. self.num_fields {
+        for _ in 0..self.num_fields {
             let name: String;
             let field: usize;
             if let Some(entry) = self.placement.iter().find(|(_, y)| y.len() == 1) {
@@ -143,8 +152,15 @@ impl Ticket {
 
     fn validate(&self, rules: &Rules) -> (u32, u32) {
         let result: (u32, u32) = (0, 0);
-        self.fields.iter()
-            .filter(|x| ! rules.bounds.values().flat_map(|y| y.iter()).any(|y| y.contains(x)))
+        self.fields
+            .iter()
+            .filter(|x| {
+                !rules
+                    .bounds
+                    .values()
+                    .flat_map(|y| y.iter())
+                    .any(|y| y.contains(x))
+            })
             .fold(result, |(mut count, mut sum), x| {
                 count += 1;
                 sum += x;

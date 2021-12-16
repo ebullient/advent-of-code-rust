@@ -2,9 +2,9 @@ use crate::puzzle_input;
 
 pub fn run() {
     let input: Vec<usize> = puzzle_input::read_string("./input/2021-d06-input.txt")
-            .split(',')
-            .map(|x| x.parse::<usize>().unwrap())
-            .collect();
+        .split(',')
+        .map(|x| x.parse::<usize>().unwrap())
+        .collect();
 
     // this is a matrix math problem, but I have to .. do a bunch of stuff. So this is the dumb way
     let mut calc = Calculator::new(&input);
@@ -25,8 +25,8 @@ pub fn run() {
 #[derive(Clone, Debug)]
 struct Calculator {
     a: [i64; 9],
-    b:  [i64; 9],
-    is_a: bool
+    b: [i64; 9],
+    is_a: bool,
 }
 impl Calculator {
     pub fn new(input: &Vec<usize>) -> Calculator {
@@ -39,23 +39,27 @@ impl Calculator {
         Calculator {
             a: init,
             b: [0; 9],
-            is_a: true
+            is_a: true,
         }
     }
 
     fn iterate_the_long_way(&mut self) {
-        let (prev, data) = if self.is_a { (&self.a, &mut self.b) } else { (&self.b, &mut self.a) };
+        let (prev, data) = if self.is_a {
+            (&self.a, &mut self.b)
+        } else {
+            (&self.b, &mut self.a)
+        };
         for i in 0..8 {
             match i {
                 0 => {
-                    data[i] = prev[i+1];
+                    data[i] = prev[i + 1];
                     data[6] = prev[7] + prev[0];
                     data[8] = prev[0];
-                },
+                }
                 6 | 8 => {
                     // no-op
                 }
-                _ => data[i] = prev[i+1],
+                _ => data[i] = prev[i + 1],
             }
         }
         self.is_a = !self.is_a;
@@ -84,9 +88,9 @@ mod tests {
         let mut tally = [0; 9];
 
         let data: Vec<usize> = input
-                .split(",")
-                .map(|x| x.parse::<usize>().unwrap())
-                .collect();
+            .split(",")
+            .map(|x| x.parse::<usize>().unwrap())
+            .collect();
 
         for x in data.iter() {
             tally[*x] += 1;
@@ -101,7 +105,7 @@ mod tests {
         let (input, tally) = count(&init);
         let mut calc = Calculator::new(&input);
         assert_eq!(true, calc.compare(tally));
-        assert_eq!(true, calc.compare([0,1,1,2,1,0,0,0,0]));
+        assert_eq!(true, calc.compare([0, 1, 1, 2, 1, 0, 0, 0, 0]));
 
         // calc.iterate_the_long_way();
         // assert_eq!(true, calc.compare([1,1,2,1,0,0,0,0,0]));
@@ -115,7 +119,9 @@ mod tests {
         for _ in 0..18 {
             calc.iterate_the_long_way();
         }
-        let (_, tally) = count(&String::from("6,0,6,4,5,6,0,1,1,2,6,0,1,1,1,2,2,3,3,4,6,7,8,8,8,8"));
+        let (_, tally) = count(&String::from(
+            "6,0,6,4,5,6,0,1,1,2,6,0,1,1,1,2,2,3,3,4,6,7,8,8,8,8",
+        ));
         assert_eq!(true, calc.compare(tally));
         assert_eq!(26, calc.sum());
 

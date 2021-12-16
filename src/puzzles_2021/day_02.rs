@@ -13,7 +13,7 @@ pub fn run() {
 #[derive(Clone, Copy, Debug)]
 struct Position {
     h: i32,
-    d: i32
+    d: i32,
 }
 impl std::ops::Add for Position {
     type Output = Position;
@@ -30,7 +30,7 @@ impl std::ops::Add for Position {
 struct Heading {
     h: i32,
     d: i32,
-    aim: i32
+    aim: i32,
 }
 impl std::ops::Add for Heading {
     type Output = Heading;
@@ -39,7 +39,7 @@ impl std::ops::Add for Heading {
         Heading {
             h: self.h + rhs.h,
             d: self.d + rhs.d,
-            aim: self.aim + rhs.aim
+            aim: self.aim + rhs.aim,
         }
     }
 }
@@ -59,7 +59,7 @@ fn find_position(course: &Vec<String>) -> Position {
             "forward" => position + Position { h: units, d: 0 },
             "up" => position + Position { h: 0, d: -units },
             "down" => position + Position { h: 0, d: units },
-            _ => position
+            _ => position,
         };
     }
 
@@ -69,8 +69,8 @@ fn find_position(course: &Vec<String>) -> Position {
 // down X increases your aim by X units.
 // up X decreases your aim by X units.
 // forward X does two things:
-    // It increases your horizontal position by X units.
-    // It increases your depth by your aim multiplied by X.
+// It increases your horizontal position by X units.
+// It increases your depth by your aim multiplied by X.
 fn find_heading(course: &Vec<String>) -> Heading {
     let mut heading = Heading { h: 0, d: 0, aim: 0 };
 
@@ -80,16 +80,36 @@ fn find_heading(course: &Vec<String>) -> Heading {
         let units = split.next().unwrap().parse::<i32>().unwrap();
 
         heading = match direction {
-            "forward" => heading + Heading { h: units, d: heading.aim * units, aim: 0 },
-            "up" => heading + Heading { h: 0, d: 0, aim: -units },
-            "down" => heading + Heading { h: 0, d: 0, aim: units },
-            _ => heading
+            "forward" => {
+                heading
+                    + Heading {
+                        h: units,
+                        d: heading.aim * units,
+                        aim: 0,
+                    }
+            }
+            "up" => {
+                heading
+                    + Heading {
+                        h: 0,
+                        d: 0,
+                        aim: -units,
+                    }
+            }
+            "down" => {
+                heading
+                    + Heading {
+                        h: 0,
+                        d: 0,
+                        aim: units,
+                    }
+            }
+            _ => heading,
         };
     }
 
     heading
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -97,12 +117,14 @@ mod tests {
 
     #[test]
     fn test() {
-        let input: Vec<String> = puzzle_input::split_string("forward 5
+        let input: Vec<String> = puzzle_input::split_string(
+            "forward 5
             down 5
             forward 8
             up 3
             down 8
-            forward 2");
+            forward 2",
+        );
 
         let p = find_position(&input);
         assert_eq!(p.h, 15);

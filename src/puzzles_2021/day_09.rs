@@ -1,7 +1,7 @@
 use crate::puzzle_input;
+use std::cmp;
 use std::collections::HashMap;
 use std::collections::HashSet;
-use std::cmp;
 use std::hash;
 
 pub fn run() {
@@ -17,7 +17,7 @@ pub fn run() {
 struct Point {
     y: usize,
     x: usize,
-    height: i32
+    height: i32,
 }
 impl hash::Hash for Point {
     fn hash<H: hash::Hasher>(&self, state: &mut H) {
@@ -43,18 +43,21 @@ impl Grid {
         let mut data: HashMap<(usize, usize), Point> = HashMap::new();
         for (y, row) in input.iter().enumerate() {
             for (x, col) in row.trim().chars().enumerate() {
-                data.insert((y, x), Point {
-                    x: x,
-                    y: y,
-                    height: col.to_digit(10).unwrap() as i32
-                });
+                data.insert(
+                    (y, x),
+                    Point {
+                        x: x,
+                        y: y,
+                        height: col.to_digit(10).unwrap() as i32,
+                    },
+                );
             }
         }
 
         Grid {
             data: data,
             height: input.len(),
-            width: input[0].len()
+            width: input[0].len(),
         }
     }
 
@@ -81,13 +84,16 @@ impl Grid {
             return;
         }
         seen.insert(*p);
-        self.neighbors(p).iter()
+        self.neighbors(p)
+            .iter()
             .filter(|n| n.height != 9)
             .for_each(|n| self.basin(n, seen));
     }
 
     fn find_basins(&self) -> i32 {
-        let mut result: Vec<i32> = self.data.values()
+        let mut result: Vec<i32> = self
+            .data
+            .values()
             .filter(|p| self.neighbors(p).iter().all(|n| n.height > p.height))
             .map(|p| {
                 let mut seen = HashSet::new();
@@ -96,12 +102,13 @@ impl Grid {
             })
             .collect();
 
-        result.sort_by(|a,b| b.cmp(a));
+        result.sort_by(|a, b| b.cmp(a));
         result.iter().take(3).product()
     }
 
     fn find_risk(&self) -> i32 {
-        self.data.values()
+        self.data
+            .values()
             .filter(|p| self.neighbors(p).iter().all(|n| n.height > p.height))
             .map(|p| p.height + 1)
             .sum()
@@ -120,18 +127,19 @@ impl Grid {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test() {
-        let input: Vec<String> = puzzle_input::split_string("2199943210
+        let input: Vec<String> = puzzle_input::split_string(
+            "2199943210
             3987894921
             9856789892
             8767896789
-            9899965678");
+            9899965678",
+        );
 
         let grid = Grid::new(&input);
         grid.dump();

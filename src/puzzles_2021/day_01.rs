@@ -34,8 +34,8 @@ fn sonar_window_scan(report: &Vec<i32>) -> i32 {
     let mut previous = 0;
     let mut increase = 0;
 
-    for i in 2 .. (report.len()) {
-        let sum = report[i] + report[i-1] + report[i-2];
+    for i in 2..(report.len()) {
+        let sum = report[i] + report[i - 1] + report[i - 2];
         if previous != 0 {
             if sum > previous {
                 increase += 1;
@@ -62,10 +62,11 @@ mod tests {
         240
         269
         260
-        263".split('\n')
-            .map(|x| x.to_string())
-            .map(|x| x.trim().parse::<i32>().unwrap())
-            .collect();
+        263"
+        .split('\n')
+        .map(|x| x.to_string())
+        .map(|x| x.trim().parse::<i32>().unwrap())
+        .collect();
 
         let increases = sonar_scan(&input);
         assert_eq!(increases, 7);

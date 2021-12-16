@@ -1,6 +1,6 @@
 use crate::puzzle_input;
-use std::collections::HashMap;
 use itertools::Itertools;
+use std::collections::HashMap;
 use std::slice::Iter;
 
 pub fn run() {
@@ -29,9 +29,7 @@ impl Rules {
             }
         }
 
-        Rules {
-            data: data
-        }
+        Rules { data: data }
     }
 }
 
@@ -42,12 +40,15 @@ struct Totals {
 }
 impl Totals {
     fn new(start: &str) -> Totals {
-        let data = start.chars().tuple_windows().fold(HashMap::new(), |mut acc, (a, b)| {
-            let pair = format!("{}{}", a, b);
-            let count = acc.entry(pair).or_insert(0);
-            *count += 1;
-            acc
-        });
+        let data = start
+            .chars()
+            .tuple_windows()
+            .fold(HashMap::new(), |mut acc, (a, b)| {
+                let pair = format!("{}{}", a, b);
+                let count = acc.entry(pair).or_insert(0);
+                *count += 1;
+                acc
+            });
 
         let letters = start.chars().fold(HashMap::new(), |mut acc, c| {
             let i = acc.entry(c).or_insert(0);
@@ -57,7 +58,7 @@ impl Totals {
 
         Totals {
             data: data,
-            letters: letters
+            letters: letters,
         }
     }
 
@@ -101,15 +102,14 @@ fn step(totals: &Totals, rules: &Rules) -> Totals {
     next
 }
 
-
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test() {
-        let input: Vec<String> = puzzle_input::split_string("NNCB
+        let input: Vec<String> = puzzle_input::split_string(
+            "NNCB
 
         CH -> B
         HH -> N
@@ -126,7 +126,8 @@ mod tests {
         BB -> N
         BC -> B
         CC -> N
-        CN -> C");
+        CN -> C",
+        );
 
         let (mut totals, rules) = parse_rules(&input);
 
@@ -155,6 +156,5 @@ mod tests {
             totals = step(&totals, &rules);
         }
         assert_eq!(2188189693529, totals.score());
-
     }
 }
