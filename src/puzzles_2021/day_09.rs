@@ -39,15 +39,15 @@ struct Grid {
     height: usize,
 }
 impl Grid {
-    fn new(input: &Vec<String>) -> Grid {
+    fn new(input: &[String]) -> Grid {
         let mut data: HashMap<(usize, usize), Point> = HashMap::new();
         for (y, row) in input.iter().enumerate() {
             for (x, col) in row.trim().chars().enumerate() {
                 data.insert(
                     (y, x),
                     Point {
-                        x: x,
-                        y: y,
+                        x,
+                        y,
                         height: col.to_digit(10).unwrap() as i32,
                     },
                 );
@@ -55,7 +55,7 @@ impl Grid {
         }
 
         Grid {
-            data: data,
+            data,
             height: input.len(),
             width: input[0].len(),
         }
@@ -65,16 +65,16 @@ impl Grid {
         let mut result: Vec<&Point> = vec![];
         // bad things happen if you try to take a usize
         if p.y > 0 {
-            result.push(&self.data.get(&(p.y - 1, p.x)).unwrap());
+            result.push(self.data.get(&(p.y - 1, p.x)).unwrap());
         }
         if p.x > 0 {
-            result.push(&self.data.get(&(p.y, p.x - 1)).unwrap());
+            result.push(self.data.get(&(p.y, p.x - 1)).unwrap());
         }
         if let Some(n) = self.data.get(&(p.y + 1, p.x)) {
-            result.push(&n);
+            result.push(n);
         }
         if let Some(n) = self.data.get(&(p.y, p.x + 1)) {
-            result.push(&n);
+            result.push(n);
         }
         result
     }
@@ -121,9 +121,9 @@ impl Grid {
                 let p = self.data.get(&(y, x)).unwrap();
                 print!("  {:?}  ", p.height);
             }
-            println!("");
+            println!();
         }
-        println!("");
+        println!();
     }
 }
 

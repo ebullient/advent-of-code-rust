@@ -28,14 +28,14 @@ pub fn run() {
     println!("** Part 2 Final: {:?}", find_max_thrust_feedback(&codes));
 }
 
-fn find_max_thrust(codes: &Vec<i64>) -> i64 {
+fn find_max_thrust(codes: &[i64]) -> i64 {
     let phases = vec![0, 1, 2, 3, 4];
     let mut max = 0;
     let mut max_sequence: Vec<i32> = phases.to_vec();
 
     for perm in phases.iter().permutations(phases.len()).unique() {
         let mut io = DefaultProgramIO::new(vec![]);
-        let current: Vec<i32> = perm.iter().copied().map(|&x| x).collect();
+        let current: Vec<i32> = perm.iter().copied().copied().collect();
         let mut last = 0;
 
         for x in &current {
@@ -70,15 +70,15 @@ struct Amplifier {
 }
 
 impl Amplifier {
-    pub fn new(ch: char, program: &Vec<i64>) -> Amplifier {
+    pub fn new(ch: char, program: &[i64]) -> Amplifier {
         let (tx, rx) = channel::<i64>();
         Amplifier {
             name: ch,
             codes: program.to_vec(),
             output: 0,
             next: None,
-            tx: tx,
-            rx: rx,
+            tx,
+            rx,
         }
     }
 
@@ -124,15 +124,15 @@ fn get_amp_next_mut<T>(slice: &mut [T], index1: usize) -> (&mut T, &mut T) {
     let last: &mut T;
     if index1 < max {
         first = iter.nth(index1).unwrap();
-        last = iter.nth(0).unwrap();
+        last = iter.next().unwrap();
     } else {
-        last = iter.nth(0).unwrap();
+        last = iter.next().unwrap();
         first = iter.nth(index1 - 1).unwrap();
     }
     (first, last)
 }
 
-fn find_max_thrust_feedback(codes: &Vec<i64>) -> i64 {
+fn find_max_thrust_feedback(codes: &[i64]) -> i64 {
     let mut pool = Pool::new(5);
     let phases = vec![5, 6, 7, 8, 9];
 
@@ -143,14 +143,14 @@ fn find_max_thrust_feedback(codes: &Vec<i64>) -> i64 {
         let last: i64;
 
         let mut amplifiers: Vec<Amplifier> = vec![
-            Amplifier::new('A', &codes),
-            Amplifier::new('B', &codes),
-            Amplifier::new('C', &codes),
-            Amplifier::new('D', &codes),
-            Amplifier::new('E', &codes),
+            Amplifier::new('A', codes),
+            Amplifier::new('B', codes),
+            Amplifier::new('C', codes),
+            Amplifier::new('D', codes),
+            Amplifier::new('E', codes),
         ];
 
-        let current: Vec<i64> = perm.iter().copied().map(|&x| x).collect();
+        let current: Vec<i64> = perm.iter().copied().copied().collect();
         for (i, x) in current.iter().enumerate() {
             let (amp, next) = get_amp_next_mut(&mut amplifiers, i);
 

@@ -14,15 +14,13 @@ pub fn run() {
     println!("** Part 2 Final: {:?}", increased_sum);
 }
 
-fn sonar_scan(report: &Vec<i32>) -> i32 {
+fn sonar_scan(report: &[i32]) -> i32 {
     let mut previous = 0;
     let mut increase = 0;
 
     for reading in report {
-        if previous != 0 {
-            if *reading > previous {
-                increase += 1;
-            }
+        if previous != 0 && *reading > previous {
+            increase += 1;
         }
         previous = *reading;
     }
@@ -30,16 +28,14 @@ fn sonar_scan(report: &Vec<i32>) -> i32 {
     increase
 }
 
-fn sonar_window_scan(report: &Vec<i32>) -> i32 {
+fn sonar_window_scan(report: &[i32]) -> i32 {
     let mut previous = 0;
     let mut increase = 0;
 
     for i in 2..(report.len()) {
         let sum = report[i] + report[i - 1] + report[i - 2];
-        if previous != 0 {
-            if sum > previous {
-                increase += 1;
-            }
+        if previous != 0 && sum > previous {
+            increase += 1;
         }
         previous = sum;
     }

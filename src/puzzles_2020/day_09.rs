@@ -3,7 +3,7 @@ use itertools::Itertools;
 use itertools::MinMaxResult::MinMax;
 
 pub fn run() {
-    let input = puzzle_input::read_all_lines("./input/2020-d09-input1.txt")
+    let input: Vec<i64> = puzzle_input::read_all_lines("./input/2020-d09-input1.txt")
         .iter()
         .map(|x| x.trim().parse::<i64>().unwrap())
         .collect();
@@ -12,10 +12,9 @@ pub fn run() {
     println!("** Part 2 Final: {:?}", find_match(&input, 105950735));
 }
 
-fn find_weakness(seq: &Vec<i64>, n: usize) -> i64 {
-    let mut min = 0;
+fn find_weakness(seq: &[i64], n: usize) -> i64 {
     let mut max = n;
-    for i in n..seq.len() {
+    for (min, i) in (n..seq.len()).enumerate() {
         // this will try all combinations (no early exit)
         if 0 == seq[min..max]
             .iter()
@@ -27,13 +26,12 @@ fn find_weakness(seq: &Vec<i64>, n: usize) -> i64 {
             return seq[i];
         }
 
-        min += 1;
         max += 1;
     }
     0
 }
 
-fn find_match(seq: &Vec<i64>, target: i64) -> i64 {
+fn find_match(seq: &[i64], target: i64) -> i64 {
     for range in 2..seq.len() {
         for x in seq.windows(range) {
             if target == x.iter().sum::<i64>() {
@@ -52,7 +50,7 @@ mod tests {
 
     #[test]
     fn test() {
-        let input = "35
+        let input: Vec<i64> = "35
             20
             15
             25

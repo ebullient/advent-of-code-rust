@@ -28,7 +28,7 @@ impl Grid {
         }
 
         Grid {
-            data: data,
+            data,
             cols: values[0].len(),
             y_max: values.len() - 1,
         }

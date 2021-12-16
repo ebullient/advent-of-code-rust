@@ -23,13 +23,13 @@ struct Rules {
 impl Rules {
     fn new(iter: &mut Iter<String>) -> Rules {
         let mut data = HashMap::new();
-        while let Some(line) = iter.next() {
+        for line in iter {
             if line.contains(" -> ") {
                 data.insert(line[..2].to_string(), line[6..].chars().next().unwrap());
             }
         }
 
-        Rules { data: data }
+        Rules { data }
     }
 }
 
@@ -56,10 +56,7 @@ impl Totals {
             acc
         });
 
-        Totals {
-            data: data,
-            letters: letters,
-        }
+        Totals { data, letters }
     }
 
     fn inc_letter(&mut self, letter: char, n: usize) {
@@ -77,7 +74,7 @@ impl Totals {
     }
 }
 
-fn parse_rules(input: &Vec<String>) -> (Totals, Rules) {
+fn parse_rules(input: &[String]) -> (Totals, Rules) {
     let mut i = input.iter();
     let totals = Totals::new(i.next().unwrap()); // start with first line
     let rules = Rules::new(&mut i); // parse the rest

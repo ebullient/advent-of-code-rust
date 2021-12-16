@@ -15,7 +15,7 @@ pub fn run() {
         .filter(|x| x.1 != None)
         .map(|x| completed_score(&x.1))
         .collect();
-    scores.sort();
+    scores.sort_unstable();
     println!("** Part 2 Final: {:?}", scores[scores.len() / 2]);
 }
 
@@ -38,7 +38,7 @@ fn parse(input: &str) -> (Option<char>, Option<Vec<char>>) {
     expected.reverse();
     (
         None,
-        if expected.len() == 0 {
+        if expected.is_empty() {
             None
         } else {
             Some(expected)
@@ -136,7 +136,7 @@ mod tests {
             .filter(|x| x.1 != None)
             .map(|x| completed_score(&x.1))
             .collect();
-        scores.sort();
+        scores.sort_unstable();
         println!("{:?}", scores);
         assert_eq!(288957, scores[scores.len() / 2]);
     }

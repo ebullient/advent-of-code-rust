@@ -47,7 +47,7 @@ impl ops::Sub for Point {
     }
 }
 
-fn find_asteroids(data: &Vec<Point>, src: &Point) -> usize {
+fn find_asteroids(data: &[Point], src: &Point) -> usize {
     let mut set = HashSet::new();
     data.iter()
         .filter(|p| *p != src)
@@ -59,7 +59,7 @@ fn find_asteroids(data: &Vec<Point>, src: &Point) -> usize {
         .count()
 }
 
-fn blast_asteroids(data: &Vec<Point>, src: &Point) -> Vec<Point> {
+fn blast_asteroids(data: &[Point], src: &Point) -> Vec<Point> {
     let mut list: Vec<(f64, i32, Point)> = data
         .iter()
         .filter(|p| *p != src)
@@ -83,7 +83,7 @@ fn blast_asteroids(data: &Vec<Point>, src: &Point) -> Vec<Point> {
             break;
         }
     }
-    if let None = blast_order.last() {
+    if blast_order.last().is_none() {
         blast_order.push(list.remove(0));
     }
 
@@ -102,7 +102,7 @@ fn blast_asteroids(data: &Vec<Point>, src: &Point) -> Vec<Point> {
     blast_order.iter().map(|x| x.2).collect()
 }
 
-fn find_most_asteroids(data: &Vec<Point>) -> i32 {
+fn find_most_asteroids(data: &[Point]) -> i32 {
     let mut max = 0;
     let mut p = &data[0];
     for point in data {
@@ -120,7 +120,7 @@ fn get_happy(p: &Point) -> i32 {
     p.x as i32 * 100 + p.y as i32
 }
 
-fn parse_input(input: &Vec<String>) -> Vec<Point> {
+fn parse_input(input: &[String]) -> Vec<Point> {
     let mut data: Vec<Point> = Vec::new();
 
     for (y, row) in input.iter().enumerate() {
@@ -143,7 +143,7 @@ mod tests {
 
     #[test]
     fn test_asteroid_field_1() {
-        let input = ".#..#
+        let input: Vec<String> = ".#..#
         .....
         #####
         ....#
@@ -162,7 +162,7 @@ mod tests {
 
     #[test]
     fn test_asteroid_field_2() {
-        let input = "......#.#.
+        let input: Vec<String> = "......#.#.
         #..#.#....
         ..#######.
         .#.#.###..
@@ -182,7 +182,7 @@ mod tests {
 
     #[test]
     fn test_asteroid_field_3() {
-        let input = "#.#...#.#.
+        let input: Vec<String> = "#.#...#.#.
         .###....#.
         .#....#...
         ##.#.#.#.#
@@ -202,7 +202,7 @@ mod tests {
 
     #[test]
     fn test_asteroid_field_4() {
-        let input = ".#..#..###
+        let input: Vec<String> = ".#..#..###
         ####.###.#
         ....###.#.
         ..###.##.#
@@ -222,7 +222,7 @@ mod tests {
 
     #[test]
     fn test_asteroid_field_5() {
-        let input = ".#..##.###...#######
+        let input: Vec<String> = ".#..##.###...#######
         ##.############..##.
         .#.######.########.#
         .###.#######.####.#.

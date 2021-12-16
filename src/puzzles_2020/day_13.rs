@@ -17,7 +17,7 @@ pub fn run() {
 // Bus schedules are defined based on a timestamp that measures the number of minutes
 // since some fixed reference point in the past.
 
-fn read_bus_schedule(input: &Vec<String>) -> (i64, Vec<Option<i64>>) {
+fn read_bus_schedule(input: &[String]) -> (i64, Vec<Option<i64>>) {
     // The first line is your estimate of the earliest timestamp you could depart on a bus.
     // The second line lists the bus IDs that are in service according to the shuttle company;
     // entries that show x must be out of service, so you decide to ignore them.
@@ -37,20 +37,16 @@ fn read_bus_schedule(input: &Vec<String>) -> (i64, Vec<Option<i64>>) {
     (time, buses)
 }
 
-fn get_buses(schedule: &Vec<Option<i64>>) -> Vec<i64> {
-    schedule
-        .iter()
-        .filter(|x| x.is_some())
-        .map(|x| x.unwrap())
-        .collect()
+fn get_buses(schedule: &[Option<i64>]) -> Vec<i64> {
+    schedule.iter().flatten().copied().collect()
 }
 
 // Part 1
-fn find_earliest_bus(earliest: i64, schedule: &Vec<Option<i64>>) -> i64 {
+fn find_earliest_bus(earliest: i64, schedule: &[Option<i64>]) -> i64 {
     let mut id = 0;
     let mut wait = i64::MAX;
     let mut buses = get_buses(schedule);
-    buses.sort();
+    buses.sort_unstable();
 
     for bus in buses {
         let remainder = bus - (earliest % bus);
@@ -63,7 +59,7 @@ fn find_earliest_bus(earliest: i64, schedule: &Vec<Option<i64>>) -> i64 {
 }
 
 // Part 2
-fn find_earliest_bus_sequence(schedule: &Vec<Option<i64>>) -> i64 {
+fn find_earliest_bus_sequence(schedule: &[Option<i64>]) -> i64 {
     let buses: Vec<(i64, i64)> = schedule
         .iter()
         .enumerate()
@@ -88,7 +84,7 @@ mod tests {
 
     #[test]
     fn test_earliest_bus() {
-        let input = "939
+        let input: Vec<String> = "939
         7,13,x,x,59,x,31,19"
             .split('\n')
             .map(|x| x.trim().to_string())

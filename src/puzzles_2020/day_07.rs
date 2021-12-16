@@ -52,7 +52,7 @@ fn count_paths(graph: &DiGraphMap<&str, i32>, target: &str) -> i32 {
 fn count_bags(graph: &DiGraphMap<&str, i32>, start: &str) -> i32 {
     graph
         .edges(start)
-        .map(|x| *x.2 + *x.2 * count_bags(&graph, x.1))
+        .map(|x| *x.2 + *x.2 * count_bags(graph, x.1))
         .sum()
 }
 
@@ -71,7 +71,7 @@ mod tests {
         vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.
         faded blue bags contain no other bags.
         dotted black bags contain no other bags.";
-        let graph = parse_input(&input);
+        let graph = parse_input(input);
 
         assert_eq!(count_paths(&graph, "shiny gold"), 4);
         assert_eq!(count_bags(&graph, "shiny gold"), 32);

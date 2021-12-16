@@ -1,4 +1,5 @@
 use crate::puzzle_input;
+use std::cmp::Ordering;
 use std::convert::TryInto;
 
 pub fn run() {
@@ -7,8 +8,8 @@ pub fn run() {
     let (gamma, epsilon) = count_bits(&input);
     println!("** Part 1 Final: {:?} == 841526", product(&gamma, &epsilon));
 
-    let o2 = filter_bits(&input, gamma.chars().nth(0).unwrap(), '1', '1', '0');
-    let co2 = filter_bits(&input, epsilon.chars().nth(0).unwrap(), '0', '0', '1');
+    let o2 = filter_bits(&input, gamma.chars().next().unwrap(), '1', '1', '0');
+    let co2 = filter_bits(&input, epsilon.chars().next().unwrap(), '0', '0', '1');
     println!("** Part 2 Final: {:?} == 4790390", product(&o2, &co2));
 }
 
@@ -18,7 +19,7 @@ pub fn run() {
 //     the most common bit in the corresponding position of all numbers in the list.
 //  Each bit in the epsilon rate:
 //     the least common bit from each position is used.
-fn count_bits(report: &Vec<String>) -> (String, String) {
+fn count_bits(report: &[String]) -> (String, String) {
     let width = report.get(0).unwrap().len();
     let max: u32 = (report.len() / 2).try_into().unwrap();
     let sum = vec![0; width];
@@ -33,8 +34,8 @@ fn count_bits(report: &Vec<String>) -> (String, String) {
     // Keep the string values because I'm insane. Yes. Bit math is a thing.
     let mut gamma = String::new();
     let mut epsilon = String::new();
-    for i in 0..width {
-        if result[i] > max {
+    for item in result {
+        if item > max {
             gamma.push('1');
             epsilon.push('0');
         } else {
@@ -49,8 +50,8 @@ fn count_bits(report: &Vec<String>) -> (String, String) {
 // Discard numbers which do not match the bit criteria.
 // If you only have one number left, stop; this is the rating value for which you are searching.
 // Otherwise, repeat the process, considering the next bit to the right.
-fn filter_bits(report: &Vec<String>, start: char, gt: char, eq: char, lt: char) -> String {
-    let mut filtered: Vec<String> = report.clone();
+fn filter_bits(report: &[String], start: char, gt: char, eq: char, lt: char) -> String {
+    let mut filtered: Vec<String> = report.to_vec();
     let mut i = 0;
     let mut x = start;
 
@@ -66,12 +67,10 @@ fn filter_bits(report: &Vec<String>, start: char, gt: char, eq: char, lt: char) 
             .map(|line| line.chars().nth(i).unwrap().to_digit(10).unwrap() as i32)
             .sum();
         let length: i32 = filtered.len() as i32;
-        x = if count > (length - count) {
-            gt
-        } else if count == (length - count) {
-            eq
-        } else {
-            lt
+        x = match count.cmp(&(length - count)) {
+            Ordering::Greater => gt,
+            Ordering::Less => lt,
+            Ordering::Equal => eq,
         };
     }
 
@@ -80,7 +79,7 @@ fn filter_bits(report: &Vec<String>, start: char, gt: char, eq: char, lt: char) 
 
 // power consumption = gamma rate * epsilon rate.
 // life support rating = oxygen generator rating * CO2 scrubber rating.
-fn product(binary1: &String, binary2: &String) -> i32 {
+fn product(binary1: &str, binary2: &str) -> i32 {
     let x = i32::from_str_radix(binary1, 2).unwrap();
     let y = i32::from_str_radix(binary2, 2).unwrap();
     x * y
@@ -114,11 +113,11 @@ mod tests {
 
         assert_eq!(
             "10111",
-            filter_bits(&input, gamma.chars().nth(0).unwrap(), '1', '1', '0')
+            filter_bits(&input, gamma.chars().next().unwrap(), '1', '1', '0')
         );
         assert_eq!(
             "01010",
-            filter_bits(&input, epsilon.chars().nth(0).unwrap(), '0', '0', '1')
+            filter_bits(&input, epsilon.chars().next().unwrap(), '0', '0', '1')
         );
     }
 }

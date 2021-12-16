@@ -10,7 +10,7 @@ pub fn run() {
     println!("** Part 2 Final: {:?}", compute(&parsed));
 }
 
-fn count_unique(input: &Vec<(Vec<String>, Vec<String>)>) -> i32 {
+fn count_unique(input: &[(Vec<String>, Vec<String>)]) -> i32 {
     let count = input
         .iter()
         .flat_map(|x| x.1.iter())
@@ -31,7 +31,7 @@ fn count_unique(input: &Vec<(Vec<String>, Vec<String>)>) -> i32 {
 //    ZERO: [usize; 6]  = [0, 1, 2,    4, 5, 6];
 //    NINE: [usize; 6]  = [0, 1, 2, 3,    5, 6];
 
-fn decipher(input: &Vec<String>) -> HashMap<char, char> {
+fn decipher(input: &[String]) -> HashMap<char, char> {
     let mut possible = vec![String::from("abcdefg"); 7];
     let mut actual = [' '; 7];
 
@@ -83,7 +83,7 @@ fn decipher(input: &Vec<String>) -> HashMap<char, char> {
     map
 }
 
-fn decode(map: &HashMap<char, char>, input: &Vec<String>) -> i32 {
+fn decode(map: &HashMap<char, char>, input: &[String]) -> i32 {
     let mut number = String::new();
     for code in input {
         let wires: String = code
@@ -109,7 +109,7 @@ fn decode(map: &HashMap<char, char>, input: &Vec<String>) -> i32 {
     number.parse::<i32>().unwrap()
 }
 
-fn compute(input: &Vec<(Vec<String>, Vec<String>)>) -> i32 {
+fn compute(input: &[(Vec<String>, Vec<String>)]) -> i32 {
     let mut total = 0;
     for row in input {
         let single_map = decipher(&row.0);
@@ -119,7 +119,7 @@ fn compute(input: &Vec<(Vec<String>, Vec<String>)>) -> i32 {
 }
 
 // Just parse each line into sorted bits
-fn parse(input: &Vec<String>) -> Vec<(Vec<String>, Vec<String>)> {
+fn parse(input: &[String]) -> Vec<(Vec<String>, Vec<String>)> {
     let mut result = vec![];
     for line in input {
         let mut patterns = vec![];
@@ -134,7 +134,7 @@ fn parse(input: &Vec<String>) -> Vec<(Vec<String>, Vec<String>)> {
                 patterns.push(x.chars().sorted().collect::<String>());
             }
         });
-        patterns.sort_by(|a, b| a.len().cmp(&b.len()));
+        patterns.sort_by_key(|a| a.len());
         result.push((patterns, values));
     }
     result

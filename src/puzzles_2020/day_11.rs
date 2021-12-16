@@ -19,7 +19,7 @@ struct Grid {
 }
 
 impl Grid {
-    fn new(input: &Vec<String>) -> Grid {
+    fn new(input: &[String]) -> Grid {
         let mut data: HashMap<(usize, usize), char> = HashMap::new();
         for (y, row) in input.iter().enumerate() {
             for (x, col) in row.trim().chars().enumerate() {
@@ -27,7 +27,7 @@ impl Grid {
             }
         }
         Grid {
-            data: data,
+            data,
             height: input.len(),
             width: input[0].len(),
         }
@@ -51,9 +51,9 @@ impl Grid {
             for x in 0..self.width {
                 print!("{}", self.data.get(&(y, x)).unwrap());
             }
-            println!("");
+            println!();
         }
-        println!("");
+        println!();
     }
 }
 
@@ -115,7 +115,7 @@ fn get_box(grid: &Grid, point: (usize, usize)) -> Vec<(usize, usize)> {
     pts
 }
 
-fn check_box_around(start: &Grid, pts: &Vec<(usize, usize)>, is_empty: bool) -> char {
+fn check_box_around(start: &Grid, pts: &[(usize, usize)], is_empty: bool) -> char {
     // If a seat is empty (L) and there are no occupied seats adjacent to it,
     // the seat becomes occupied.
     // If a seat is occupied (#) and four or more seats adjacent to it are also occupied,
@@ -198,22 +198,22 @@ fn visible_seats(grid: &Grid, point: (usize, usize)) -> i32 {
                 }
                 break;
             }
-            new_y = new_y + offset.0;
-            new_x = new_x + offset.1;
+            new_y += offset.0;
+            new_x += offset.1;
         }
     }
     occupied
 }
 
 #[allow(dead_code)]
-fn dump(data: &Vec<Vec<char>>) {
+fn dump(data: &[Vec<char>]) {
     for y in data.iter() {
         for x in y.iter() {
             print!("{}", x);
         }
-        println!("");
+        println!();
     }
-    println!("");
+    println!();
 }
 
 #[cfg(test)]

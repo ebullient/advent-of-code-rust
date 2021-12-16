@@ -17,7 +17,7 @@ pub fn run() {
 fn is_valid(line: &str) -> bool {
     let mut iter = line.split_whitespace();
     let mut repeat_iter = iter.next().unwrap().split('-');
-    let letter = iter.next().unwrap().chars().nth(0).unwrap();
+    let letter = iter.next().unwrap().chars().next().unwrap();
     let password = iter.next().unwrap();
 
     let min = repeat_iter.next().unwrap().parse::<usize>().unwrap();
@@ -35,7 +35,7 @@ fn char_at(s: &str, pos: usize) -> char {
 fn is_really_valid(line: &str) -> bool {
     let mut iter = line.split_whitespace();
     let mut position_iter = iter.next().unwrap().split('-');
-    let letter = iter.next().unwrap().chars().nth(0).unwrap();
+    let letter = iter.next().unwrap().chars().next().unwrap();
     let password = iter.next().unwrap();
 
     let first = position_iter.next().unwrap().parse::<usize>().unwrap();
@@ -51,9 +51,9 @@ mod tests {
 
     #[test]
     fn test_valid_sled_password() {
-        assert_eq!(is_valid("1-3 a: abcde"), true);
-        assert_eq!(is_valid("1-3 b: cdefg"), false);
-        assert_eq!(is_valid("2-9 c: ccccccccc"), true);
+        assert!(is_valid("1-3 a: abcde"));
+        assert!(!is_valid("1-3 b: cdefg"));
+        assert!(is_valid("2-9 c: ccccccccc"));
     }
 
     #[test]
@@ -63,8 +63,8 @@ mod tests {
 
     #[test]
     fn test_valid_toboggan_password() {
-        assert_eq!(is_really_valid("1-3 a: abcde"), true);
-        assert_eq!(is_really_valid("1-3 b: cdefg"), false);
-        assert_eq!(is_really_valid("2-9 c: ccccccccc"), false);
+        assert!(is_really_valid("1-3 a: abcde"));
+        assert!(!is_really_valid("1-3 b: cdefg"));
+        assert!(!is_really_valid("2-9 c: ccccccccc"));
     }
 }

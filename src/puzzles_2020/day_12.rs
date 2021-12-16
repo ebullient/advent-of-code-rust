@@ -111,6 +111,7 @@ impl Waypoint {
     }
 }
 
+#[allow(clippy::neg_multiply)]
 fn rotate_waypoint(waypoint: Waypoint, ferry: &Coord, deg: i32, r: char) -> Waypoint {
     let mut result = Coord { x: 0, y: 0 };
     // Action L means to rotate the waypoint around the ship left (counter-clockwise)
@@ -186,24 +187,24 @@ mod tests {
         let origin = Coord { x: 0, y: 0 };
 
         // R 180 --> 10 units west and 4 units south
-        let mut result = rotate_waypoint(test.clone(), &origin, 180, 'R');
+        let mut result = rotate_waypoint(test, &origin, 180, 'R');
         assert_eq!(result.offset, Coord { x: -10, y: -4 });
         assert_eq!(result.position, result.offset);
         // R 90 --> 4 units east and 10 units south
-        result = rotate_waypoint(test.clone(), &origin, 90, 'R');
+        result = rotate_waypoint(test, &origin, 90, 'R');
         assert_eq!(result.offset, Coord { x: 4, y: -10 });
         assert_eq!(result.position, result.offset);
         // R 270 --> 4 units west and 10 units north
-        result = rotate_waypoint(test.clone(), &origin, 270, 'R');
+        result = rotate_waypoint(test, &origin, 270, 'R');
         assert_eq!(result.offset, Coord { x: -4, y: 10 });
         assert_eq!(result.position, result.offset);
 
         // L 270 --> 4 units east and 10 units south
-        result = rotate_waypoint(test.clone(), &origin, 270, 'L');
+        result = rotate_waypoint(test, &origin, 270, 'L');
         assert_eq!(result.offset, Coord { x: 4, y: -10 });
         assert_eq!(result.position, result.offset);
         // L 90 --> 4 units west and 10 units north
-        result = rotate_waypoint(test.clone(), &origin, 90, 'L');
+        result = rotate_waypoint(test, &origin, 90, 'L');
         assert_eq!(result.offset, Coord { x: -4, y: 10 });
         assert_eq!(result.position, result.offset);
     }
@@ -219,7 +220,9 @@ mod tests {
         .map(|x| x.trim().to_string())
         .collect();
 
-        assert_eq!(move_the_ferry(input.clone()), 25);
-        assert_eq!(move_ferry_via_waypoint(input.clone()), 286);
+        let input2 = input.clone();
+
+        assert_eq!(move_the_ferry(input), 25);
+        assert_eq!(move_ferry_via_waypoint(input2), 286);
     }
 }

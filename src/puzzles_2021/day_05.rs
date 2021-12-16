@@ -21,7 +21,7 @@ struct Grid {
 }
 
 impl Grid {
-    fn new(input: &Vec<String>, diagonals: bool) -> Grid {
+    fn new(input: &[String], diagonals: bool) -> Grid {
         lazy_static! {
             static ref LINE_RE: Regex = Regex::new(r"(\d+),(\d+)[^\d]+(\d+),(\d+)").unwrap();
         }
@@ -66,7 +66,7 @@ impl Grid {
         }
 
         Grid {
-            data: data,
+            data,
             height: height + 1,
             width: width + 1,
         }
@@ -86,9 +86,9 @@ impl Grid {
                     print!(".");
                 }
             }
-            println!("");
+            println!();
         }
-        println!("");
+        println!();
     }
 }
 

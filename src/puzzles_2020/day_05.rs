@@ -7,7 +7,7 @@ pub fn run() {
         let seat = to_integer(line.as_str());
         seats.push(seat);
     }
-    seats.sort();
+    seats.sort_unstable();
     let mut seat = 0;
     for n in 1..seats.len() - 2 {
         if seats[n + 2] - seats[n] != 2 {

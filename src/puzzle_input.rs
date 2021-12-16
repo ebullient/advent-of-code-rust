@@ -1,25 +1,22 @@
 use std::fs;
 use std::fs::File;
-use std::io::{self, BufRead, BufReader};
+use std::io::{BufRead, BufReader};
 use std::path::Path;
 
-pub fn read_all_lines<'a, P>(filename: P) -> Vec<String>
+pub fn read_all_lines<P>(filename: P) -> Vec<String>
 where
     P: AsRef<Path>,
 {
     let mut result: Vec<String> = Vec::new();
-    let mut reader = Box::new(io::empty()) as Box<dyn BufRead>;
 
-    let file = File::open(filename);
-    if file.is_ok() {
-        reader = Box::new(BufReader::new(file.unwrap()))
-    }
+    if let Ok(file) = File::open(filename) {
+        let reader = Box::new(BufReader::new(file));
 
-    for line in reader.lines() {
-        if let Ok(item) = line {
-            result.push(item);
+        for line in reader.lines().flatten() {
+            result.push(line);
         }
     }
+
     result
 }
 

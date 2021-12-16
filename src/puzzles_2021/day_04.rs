@@ -8,13 +8,13 @@ pub fn run() {
     let (draw, mut boards) = parse_input(&input);
     let n = boards.len();
     let (last, winner) = play(&draw, &mut boards, n);
-    let (_, total) = finish(last, &winner);
+    let (_, total) = finish(last, winner);
     println!("** Part 1 Final: {:?}", total);
 
     boards.iter_mut().for_each(|b| b.clear());
 
     let (last2, winner2) = play_through(&draw, &mut boards, n);
-    let (_, total2) = finish(last2, &winner2);
+    let (_, total2) = finish(last2, winner2);
     println!("** Part 2 Final: {:?}", total2);
 }
 
@@ -33,7 +33,7 @@ impl Board {
             let row: Vec<i32> = iter
                 .next()
                 .unwrap()
-                .split(" ")
+                .split(' ')
                 .filter(|x| !x.is_empty())
                 .map(|x| x.parse::<i32>().unwrap())
                 .collect();
@@ -43,7 +43,7 @@ impl Board {
         }
 
         Board {
-            data: data,
+            data,
             marked: Vec::new(),
             rows: [0; 5],
             cols: [0; 5],
@@ -75,13 +75,13 @@ impl Board {
     }
 }
 
-fn parse_input(input: &Vec<String>) -> (Vec<i32>, Vec<Board>) {
+fn parse_input(input: &[String]) -> (Vec<i32>, Vec<Board>) {
     let mut boards: Vec<Board> = Vec::new();
     let mut iter = input.iter();
     let draw: Vec<i32> = iter
         .next()
         .unwrap()
-        .split(",")
+        .split(',')
         .map(|x| x.parse::<i32>().unwrap())
         .collect();
     while let Some(_) = iter.next() {
@@ -91,7 +91,8 @@ fn parse_input(input: &Vec<String>) -> (Vec<i32>, Vec<Board>) {
     (draw, boards)
 }
 
-fn play<'a>(draw: &'a Vec<i32>, boards: &'a mut Vec<Board>, n: usize) -> (i32, &'a Board) {
+#[allow(clippy::needless_range_loop)]
+fn play<'a>(draw: &'a [i32], boards: &'a mut Vec<Board>, n: usize) -> (i32, &'a Board) {
     for d in draw {
         for i in 0..n {
             let bingo = boards[i].mark(*d);
@@ -103,7 +104,8 @@ fn play<'a>(draw: &'a Vec<i32>, boards: &'a mut Vec<Board>, n: usize) -> (i32, &
     panic!("No winner?! We did it wrong.");
 }
 
-fn play_through<'a>(draw: &'a Vec<i32>, boards: &'a mut Vec<Board>, n: usize) -> (i32, &'a Board) {
+#[allow(clippy::needless_range_loop)]
+fn play_through<'a>(draw: &'a [i32], boards: &'a mut Vec<Board>, n: usize) -> (i32, &'a Board) {
     let mut results: Vec<(i32, usize)> = Vec::new();
 
     for d in draw {
@@ -122,11 +124,11 @@ fn play_through<'a>(draw: &'a Vec<i32>, boards: &'a mut Vec<Board>, n: usize) ->
 
 // Start by finding the sum of all unmarked numbers on that board;
 // Then, multiply that sum by the number that was last called.
-fn finish<'a>(draw: i32, board: &'a Board) -> (i32, i32) {
+fn finish(draw: i32, board: &Board) -> (i32, i32) {
     let unmarked: i32 = board
         .data
         .keys()
-        .map(|x| *x)
+        .copied()
         .filter(|x| !board.marked.contains(x))
         .sum();
     (unmarked, unmarked * draw)
@@ -167,14 +169,14 @@ mod tests {
         let n = boards.len();
 
         let (last, winner) = play(&draw, &mut boards, n);
-        let (sum, total) = finish(last, &winner);
+        let (sum, total) = finish(last, winner);
         assert_eq!(sum, 188);
         assert_eq!(total, 4512);
 
         boards.iter_mut().for_each(|b| b.clear());
 
         let (last2, winner2) = play_through(&draw, &mut boards, n);
-        let (sum2, total2) = finish(last2, &winner2);
+        let (sum2, total2) = finish(last2, winner2);
         assert_eq!(sum2, 148);
         assert_eq!(total2, 1924);
     }

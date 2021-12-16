@@ -11,7 +11,7 @@ pub fn run() {
     println!("** Part 2 Final: {:?}", check_three_expenses(&expenses));
 }
 
-fn check_two_expenses(expenses: &Vec<i64>) -> i64 {
+fn check_two_expenses(expenses: &[i64]) -> i64 {
     for (i, &x) in expenses.iter().enumerate() {
         let next = i + 1;
         let slice = &expenses[next..];
@@ -24,7 +24,7 @@ fn check_two_expenses(expenses: &Vec<i64>) -> i64 {
     0
 }
 
-fn check_three_expenses(expenses: &Vec<i64>) -> i64 {
+fn check_three_expenses(expenses: &[i64]) -> i64 {
     for (i, &x) in expenses.iter().enumerate() {
         let m = i + 1;
         let s1 = &expenses[m..];

@@ -45,7 +45,7 @@ fn parse_input(input: &str) -> (Rules, Ticket, Vec<Ticket>) {
         .lines()
         .map(|x| x.trim())
         .filter(|x| !x.contains("tickets"))
-        .map(|x| Ticket::new(x))
+        .map(Ticket::new)
         .collect();
 
     (rules, my_ticket, tickets)
@@ -55,11 +55,11 @@ fn to_u32(s: Option<Match>) -> u32 {
     s.unwrap().as_str().parse::<u32>().unwrap()
 }
 
-fn validate(rules: &Rules, tickets: &Vec<Ticket>) -> u32 {
+fn validate(rules: &Rules, tickets: &[Ticket]) -> u32 {
     tickets
         .iter()
         .map(|x| {
-            let (_, sum) = x.validate(&rules);
+            let (_, sum) = x.validate(rules);
             sum
         })
         .sum()
@@ -92,11 +92,14 @@ impl Rules {
         result
     }
 
-    fn find_eligible_fields(&mut self, tickets: &Vec<Ticket>) {
+    fn find_eligible_fields(&mut self, tickets: &[Ticket]) {
         self.num_fields = tickets[0].fields.len();
         let all_tickets = tickets.len();
         for (key, b) in self.bounds.iter() {
-            let ok_index = self.placement.entry(key.to_string()).or_insert(vec![]);
+            let ok_index = self
+                .placement
+                .entry(key.to_string())
+                .or_insert_with(Vec::new);
             for i in 0..self.num_fields {
                 let valid = tickets
                     .iter()
@@ -144,7 +147,7 @@ impl Ticket {
         Ticket {
             fields: input
                 .trim()
-                .split(",")
+                .split(',')
                 .map(|x| x.parse::<u32>().unwrap())
                 .collect(),
         }

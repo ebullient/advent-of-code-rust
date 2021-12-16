@@ -42,10 +42,10 @@ impl Layer {
         }
 
         Layer {
-            data: data,
-            zeros: zeros,
-            ones: ones,
-            twos: twos,
+            data,
+            zeros,
+            ones,
+            twos,
         }
     }
 }
@@ -59,8 +59,8 @@ struct Image {
 impl Image {
     pub fn new(w: usize, h: usize) -> Image {
         Image {
-            w: w,
-            h: h,
+            w,
+            h,
             layers: Vec::new(),
         }
     }
@@ -84,16 +84,17 @@ impl Image {
         }
     }
 
-    fn print(&self, canvas: &Vec<Vec<char>>) {
+    fn print(&self, canvas: &[Vec<char>]) {
         for y in canvas.iter() {
             for x in y.iter() {
                 print!("{}", x);
             }
-            println!("");
+            println!();
         }
-        println!("");
+        println!();
     }
 
+    #[allow(clippy::needless_range_loop)]
     pub fn draw_image(&self) {
         let mut canvas: Vec<Vec<char>> = vec![vec![' '; self.w]; self.h];
 

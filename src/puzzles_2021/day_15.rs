@@ -21,8 +21,9 @@ pub fn run() {
     println!("** Part 2 Final: {:?}", big_path.0);
 }
 
+#[allow(clippy::type_complexity)]
 fn parse(
-    input: &Vec<String>,
+    input: &[String],
 ) -> (
     DiGraphMap<(usize, usize), i32>,
     (usize, usize),
@@ -46,8 +47,8 @@ fn parse(
             }
             add_edges(&mut graph, max_height, max_width, y, x, r[0]);
 
-            for i in 0..5 as usize {
-                for j in 0..5 as usize {
+            for i in 0..5 {
+                for j in 0..5 {
                     let r = r[i + j] as i32;
                     let y1 = y + i * height;
                     let x1 = x + j * width;
@@ -97,9 +98,9 @@ fn dump(graph: &DiGraphMap<(usize, usize), i32>, max_height: usize, max_width: u
                 print!(".");
             }
         }
-        println!("");
+        println!();
     }
-    println!("");
+    println!();
 }
 
 #[cfg(test)]

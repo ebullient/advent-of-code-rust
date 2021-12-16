@@ -52,7 +52,7 @@ struct Grid {
 }
 
 impl Grid {
-    fn new(input: &Vec<String>) -> Grid {
+    fn new(input: &[String]) -> Grid {
         let mut data: HashMap<(usize, usize), i32> = HashMap::new();
         for (y, row) in input.iter().enumerate() {
             for (x, col) in row.trim().chars().enumerate() {
@@ -61,7 +61,7 @@ impl Grid {
         }
 
         Grid {
-            data: data,
+            data,
             height: input.len(),
             width: input[0].len(),
             flashes: 0,
@@ -111,9 +111,9 @@ impl Grid {
                     print!(".");
                 }
             }
-            println!("");
+            println!();
         }
-        println!("");
+        println!();
     }
 }
 

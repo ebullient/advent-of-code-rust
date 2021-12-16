@@ -10,12 +10,12 @@ pub fn run() {
     println!("** Part 2 Final: {:?}", count_all_combinations(&input));
 }
 
-fn count_all_combinations(list: &Vec<i32>) -> i64 {
+fn count_all_combinations(list: &[i32]) -> i64 {
     let mut map: HashMap<usize, i64> = HashMap::new();
-    count_paths(&list, &mut map, 0)
+    count_paths(list, &mut map, 0)
 }
 
-fn count_paths(list: &Vec<i32>, map: &mut HashMap<usize, i64>, i: usize) -> i64 {
+fn count_paths(list: &[i32], map: &mut HashMap<usize, i64>, i: usize) -> i64 {
     // Last element. There is only one path to it.
     // Backtrack begins here
     if i == list.len() - 1 {
@@ -42,7 +42,7 @@ fn count_paths(list: &Vec<i32>, map: &mut HashMap<usize, i64>, i: usize) -> i64 
 }
 
 fn find_distribution(list: &mut Vec<i32>) -> Result<i32, String> {
-    list.sort();
+    list.sort_unstable();
     list.insert(0, 0);
     list.push(list.last().unwrap() + 3);
 

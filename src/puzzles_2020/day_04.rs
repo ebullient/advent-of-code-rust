@@ -16,14 +16,14 @@ enum Validity {
     Valid,
 }
 
-static REQ_KEYS: [&'static str; 7] = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
+static REQ_KEYS: [&str; 7] = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
 static MISSING: Option<&Validity> = Some(&Validity::Missing);
 
-fn has_all_required<'a>(map: &HashMap<&'a str, Validity>) -> bool {
+fn has_all_required(map: &HashMap<&str, Validity>) -> bool {
     REQ_KEYS.iter().filter(|x| !map.contains_key(*x)).count() == 0
 }
 
-fn is_valid<'a>(map: &HashMap<&'a str, Validity>) -> bool {
+fn is_valid(map: &HashMap<&str, Validity>) -> bool {
     REQ_KEYS
         .iter()
         .filter(|x| *map.get(*x).or(MISSING).unwrap() != Validity::Valid)
@@ -121,7 +121,7 @@ fn in_height_range(h: &str, u: &str) -> bool {
     (u == "cm" && 150 <= height && height <= 193) || (u == "in" && 59 <= height && height <= 76)
 }
 
-fn validate(batch: &Vec<String>) -> (i32, i32) {
+fn validate(batch: &[String]) -> (i32, i32) {
     let mut map: HashMap<&str, Validity> = HashMap::new();
     let mut present = 0;
     let mut valid = 0;
@@ -132,7 +132,7 @@ fn validate(batch: &Vec<String>) -> (i32, i32) {
             valid += if is_valid(&map) { 1 } else { 0 };
             map.clear();
         } else {
-            check(&mut map, &line);
+            check(&mut map, line);
         }
     }
     present += if has_all_required(&map) { 1 } else { 0 };
@@ -147,7 +147,7 @@ mod tests {
 
     #[test]
     fn test_validate_passport() {
-        let input = "ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
+        let input: Vec<String> = "ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
         byr:1937 iyr:2017 cid:147 hgt:183cm
 
         iyr:2013 ecl:amb cid:350 eyr:2023 pid:028048884
@@ -159,15 +159,18 @@ mod tests {
         hgt:179cm
 
         hcl:#cfa07d eyr:2025 pid:166559648
-        iyr:2011 ecl:brn hgt:59in";
+        iyr:2011 ecl:brn hgt:59in"
+            .split('\n')
+            .map(|x| x.to_string())
+            .collect();
 
-        let (required, _) = validate(&input.split('\n').map(|x| x.to_string()).collect());
+        let (required, _) = validate(&input);
         assert_eq!(required, 2);
     }
 
     #[test]
     fn test_invalid_passports() {
-        let input = "eyr:1972 cid:100
+        let input: Vec<String> = "eyr:1972 cid:100
         hcl:#18171d ecl:amb hgt:170 pid:186cm iyr:2018 byr:1926
 
         iyr:2019
@@ -179,16 +182,19 @@ mod tests {
 
         hgt:59cm ecl:zzz
         eyr:2038 hcl:74454a iyr:2023
-        pid:3556412378 byr:2007";
+        pid:3556412378 byr:2007"
+            .split('\n')
+            .map(|x| x.to_string())
+            .collect();
 
-        let (required, valid) = validate(&input.split('\n').map(|x| x.to_string()).collect());
+        let (required, valid) = validate(&input);
         assert_eq!(required, 4);
         assert_eq!(valid, 0);
     }
 
     #[test]
     fn test_valid_passports() {
-        let input = "pid:087499704 hgt:74in ecl:grn iyr:2012 eyr:2030 byr:1980
+        let input: Vec<String> = "pid:087499704 hgt:74in ecl:grn iyr:2012 eyr:2030 byr:1980
         hcl:#623a2f
 
         eyr:2029 ecl:blu cid:129 byr:1989
@@ -199,9 +205,12 @@ mod tests {
         pid:545766238 ecl:hzl
         eyr:2022
 
-        iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719";
+        iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719"
+            .split('\n')
+            .map(|x| x.to_string())
+            .collect();
 
-        let (required, valid) = validate(&input.split('\n').map(|x| x.to_string()).collect());
+        let (required, valid) = validate(&input);
         assert_eq!(required, 4);
         assert_eq!(valid, 4);
     }

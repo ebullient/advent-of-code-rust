@@ -9,8 +9,8 @@ pub fn run() {
     println!("** Part 2 Final: {:?}", try_repair(&input));
 }
 
-pub fn try_repair(program: &Vec<String>) -> i32 {
-    let mut input = program.clone();
+pub fn try_repair(program: &[String]) -> i32 {
+    let mut input = program.to_vec();
     for (i, line) in program.iter().enumerate() {
         if line.starts_with("nop") || line.starts_with("jmp") {
             input[i] = if line.starts_with("nop") {
@@ -28,7 +28,7 @@ pub fn try_repair(program: &Vec<String>) -> i32 {
     0
 }
 
-pub fn detect_loop(program: &Vec<String>) -> (i32, bool) {
+pub fn detect_loop(program: &[String]) -> (i32, bool) {
     let mut console = GameConsole::new(program);
     let mut set = HashSet::new();
     let mut inf = false;
@@ -49,12 +49,12 @@ pub fn detect_loop(program: &Vec<String>) -> (i32, bool) {
 }
 
 struct GameConsole<'a> {
-    instructions: &'a Vec<String>,
+    instructions: &'a [String],
     accumulator: i32,
     position: usize,
 }
 impl<'a> GameConsole<'a> {
-    pub fn new(values: &'a Vec<String>) -> GameConsole {
+    pub fn new(values: &'a [String]) -> GameConsole {
         GameConsole {
             instructions: values,
             accumulator: 0,
@@ -105,7 +105,7 @@ impl<'a> GameConsole<'a> {
                     }
                 }
             }
-            Err(msg) => return Err(msg),
+            Err(msg) => Err(msg),
         }
     }
 }
@@ -116,7 +116,7 @@ mod tests {
 
     #[test]
     fn test_game_console() {
-        let input = "nop +0
+        let input: Vec<String> = "nop +0
         acc +1
         jmp +4
         acc +3
@@ -131,7 +131,7 @@ mod tests {
 
         let (result, infinite) = detect_loop(&input);
         assert_eq!(result, 5);
-        assert_eq!(infinite, true);
+        assert!(infinite);
 
         assert_eq!(try_repair(&input), 8);
     }

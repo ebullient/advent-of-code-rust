@@ -238,8 +238,8 @@ fn opcode_9(modes: Modes, i: usize, computer: &mut Computer) -> usize {
 pub fn run(codes: &mut Vec<i64>, io: &mut dyn ProgramIO) {
     let mut i: usize = 0;
     let mut computer = Computer {
-        codes: codes,
-        io: io,
+        codes,
+        io,
         extents: HashMap::new(),
         relative_base: 0,
     };

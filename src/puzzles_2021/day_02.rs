@@ -47,7 +47,7 @@ impl std::ops::Add for Heading {
 // forward X increases the horizontal position by X units.
 // down X increases the depth by X units.
 // up X decreases the depth by X units.
-fn find_position(course: &Vec<String>) -> Position {
+fn find_position(course: &[String]) -> Position {
     let mut position = Position { h: 0, d: 0 };
 
     for entry in course {
@@ -71,7 +71,7 @@ fn find_position(course: &Vec<String>) -> Position {
 // forward X does two things:
 // It increases your horizontal position by X units.
 // It increases your depth by your aim multiplied by X.
-fn find_heading(course: &Vec<String>) -> Heading {
+fn find_heading(course: &[String]) -> Heading {
     let mut heading = Heading { h: 0, d: 0, aim: 0 };
 
     for entry in course {

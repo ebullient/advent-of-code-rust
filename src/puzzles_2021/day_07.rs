@@ -45,7 +45,7 @@ fn triangle(input: &mut Vec<i32>, m1: i32, m2: i32) -> (i32, i32) {
         .map(|x| {
             let n1 = (m1 - x).abs();
             let n2 = (m2 - x).abs();
-            ((n1 * (n1 + 1)) / 2 as i32, (n2 * (n2 + 1)) / 2 as i32)
+            ((n1 * (n1 + 1)) / 2_i32, (n2 * (n2 + 1)) / 2_i32)
         })
         .reduce(|accum, item| (accum.0 + item.0, accum.1 + item.1))
         .unwrap()
@@ -58,7 +58,7 @@ mod tests {
     #[test]
     fn test() {
         let mut input: Vec<i32> = "16,1,2,0,4,2,7,1,2,14"
-            .split(",")
+            .split(',')
             .map(|x| x.parse::<i32>().unwrap())
             .collect();
 

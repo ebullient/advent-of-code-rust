@@ -54,28 +54,28 @@ fn next(last: Point, path: &mut HashSet<Point>, direction: char, n: i32) -> Poin
                 pt = Point {
                     x: last.x,
                     y: last.y + m,
-                    steps: steps,
+                    steps,
                 }
             }
             'D' => {
                 pt = Point {
                     x: last.x,
                     y: last.y - m,
-                    steps: steps,
+                    steps,
                 }
             }
             'L' => {
                 pt = Point {
                     x: last.x - m,
                     y: last.y,
-                    steps: steps,
+                    steps,
                 }
             }
             'R' => {
                 pt = Point {
                     x: last.x + m,
                     y: last.y,
-                    steps: steps,
+                    steps,
                 }
             }
             _ => {
@@ -113,7 +113,7 @@ fn compute_path(input: &str) -> HashSet<Point> {
 
 fn nearest_intersection(path1: &HashSet<Point>, path2: &HashSet<Point>) -> i32 {
     let mut nearest = std::i32::MAX;
-    for point in path1.intersection(&path2) {
+    for point in path1.intersection(path2) {
         let md = point.x.abs() + point.y.abs();
         println!("{:?} -> {:?}", point, md);
         if md < nearest {
@@ -126,7 +126,7 @@ fn nearest_intersection(path1: &HashSet<Point>, path2: &HashSet<Point>) -> i32 {
 fn shortest_path(path1: &HashSet<Point>, path2: &HashSet<Point>) -> i32 {
     let mut shortest = std::i32::MAX;
 
-    for x in path1.intersection(&path2) {
+    for x in path1.intersection(path2) {
         let point1 = path1.get(x).unwrap();
         let point2 = path2.get(x).unwrap();
         let sum = point1.steps + point2.steps;

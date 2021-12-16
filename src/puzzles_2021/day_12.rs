@@ -10,7 +10,7 @@ pub fn run() {
     println!("** Part 2 Final: {:?}", count_paths_more_caves(&g));
 }
 
-fn parse(input: &Vec<String>) -> UnGraphMap<&str, i32> {
+fn parse(input: &[String]) -> UnGraphMap<&str, i32> {
     let mut g = UnGraphMap::new();
     for line in input {
         let mut i = line.split('-');
@@ -27,7 +27,7 @@ fn count_paths_more_caves(graph: &UnGraphMap<&str, i32>) -> usize {
     let mut visitor = PermissiveVisitor::new();
 
     current.push(String::from("start"));
-    dfs(&graph, &mut visitor, &mut current, &mut all, "start", "end");
+    dfs(graph, &mut visitor, &mut current, &mut all, "start", "end");
     all.len()
 }
 
@@ -37,7 +37,7 @@ fn count_paths(graph: &UnGraphMap<&str, i32>) -> usize {
     let mut visitor = DefaultVisitor::new();
 
     current.push(String::from("start"));
-    dfs(&graph, &mut visitor, &mut current, &mut all, "start", "end");
+    dfs(graph, &mut visitor, &mut current, &mut all, "start", "end");
     all.len()
 }
 

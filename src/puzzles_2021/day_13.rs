@@ -28,23 +28,23 @@ struct Paper {
 }
 
 impl Paper {
-    fn new(input: &Vec<String>) -> Paper {
+    fn new(input: &[String]) -> Paper {
         let mut dots: HashSet<(usize, usize)> = HashSet::new();
         let mut folds: Vec<(char, usize)> = vec![];
         let mut height: usize = 0;
         let mut width: usize = 0;
 
         for line in input {
-            if line.contains(",") {
-                let mut split = line.split(",");
+            if line.contains(',') {
+                let mut split = line.split(',');
                 let x = split.next().unwrap().parse::<usize>().unwrap();
                 let y = split.next().unwrap().parse::<usize>().unwrap();
                 width = cmp::max(x, width);
                 height = cmp::max(y, height);
                 dots.insert((y, x));
-            } else if line.contains("=") {
+            } else if line.contains('=') {
                 let fold = line.get(11..).unwrap();
-                let mut split = fold.split("=");
+                let mut split = fold.split('=');
                 let axis = split.next().unwrap().chars().next().unwrap();
                 let index = split.next().unwrap().parse::<usize>().unwrap();
                 folds.push((axis, index));
@@ -52,8 +52,8 @@ impl Paper {
         }
 
         Paper {
-            dots: dots,
-            folds: folds,
+            dots,
+            folds,
             state: 0,
             height: height + 1,
             width: width + 1,
@@ -94,15 +94,15 @@ impl Paper {
     fn dump(&self) {
         for y in 0..self.height {
             for x in 0..self.width {
-                if let Some(_) = self.dots.get(&(y, x)) {
+                if self.dots.get(&(y, x)).is_some() {
                     print!("#");
                 } else {
                     print!(".");
                 }
             }
-            println!("");
+            println!();
         }
-        println!("");
+        println!();
     }
 }
 

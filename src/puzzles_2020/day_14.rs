@@ -2,7 +2,7 @@ use crate::puzzle_input;
 use regex::Regex;
 use std::collections::HashMap;
 
-const DEFAULT_MASK: &'static str = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+const DEFAULT_MASK: &str = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 
 pub fn run() {
     let input = puzzle_input::read_all_lines("./input/2020-d14-input1.txt");
@@ -46,7 +46,7 @@ fn apply_mask_to_address(mask: &str, val: u64) -> Vec<u64> {
         .collect()
 }
 
-fn run_init_program(input: &Vec<String>, v: i32) -> u64 {
+fn run_init_program(input: &[String], v: i32) -> u64 {
     lazy_static! {
         static ref RE: Regex = Regex::new(r"mem\[(\d+)\]").unwrap();
     }
@@ -82,12 +82,12 @@ mod tests {
     fn test_apply_mask_to_address() {
         let mask = "000000000000000000000000000000X1001X";
         let mut result = apply_mask_to_address(mask, 42);
-        result.sort();
+        result.sort_unstable();
         assert_eq!(result, vec![26, 27, 58, 59]);
 
         let mask = "00000000000000000000000000000000X0XX";
         result = apply_mask_to_address(mask, 26);
-        result.sort();
+        result.sort_unstable();
         assert_eq!(result, vec![16, 17, 18, 19, 24, 25, 26, 27]);
     }
 
@@ -101,7 +101,7 @@ mod tests {
 
     #[test]
     fn test_init_program_v1() {
-        let input = "mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
+        let input: Vec<String> = "mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
             mem[8] = 11
             mem[7] = 101
             mem[8] = 0"
@@ -114,7 +114,7 @@ mod tests {
 
     #[test]
     fn test_init_program_v2() {
-        let input = "mask = 000000000000000000000000000000X1001X
+        let input: Vec<String> = "mask = 000000000000000000000000000000X1001X
         mem[42] = 100
         mask = 00000000000000000000000000000000X0XX
         mem[26] = 1"

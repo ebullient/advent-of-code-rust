@@ -7,7 +7,7 @@ pub fn run() {
     println!("** Part 2 Final: {:?}", count_intersection_answers(&input));
 }
 
-fn count_answers(batch: &Vec<String>) -> i32 {
+fn count_answers(batch: &[String]) -> i32 {
     let mut set: HashSet<char> = HashSet::new();
     batch
         .split(|x| x.is_empty())
@@ -19,14 +19,14 @@ fn count_answers(batch: &Vec<String>) -> i32 {
         .sum::<usize>() as i32
 }
 
-fn count_intersection_answers(batch: &Vec<String>) -> i32 {
+fn count_intersection_answers(batch: &[String]) -> i32 {
     batch
         .split(|x| x.is_empty())
         .map(|group| {
             let mut set: HashSet<char> = group[0].chars().collect();
             group.iter().for_each(|x| {
                 let v: HashSet<char> = x.chars().collect();
-                set = set.intersection(&v).map(|x| *x).collect();
+                set = set.intersection(&v).copied().collect();
             });
             set.len()
         })
