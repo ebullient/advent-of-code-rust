@@ -27,7 +27,6 @@ enum PacketType {
     EqualTo = 7,
 }
 
-
 #[derive(Clone, Debug, PartialEq)]
 struct BitsPacket {
     b_version: usize,
@@ -48,7 +47,12 @@ impl BitsPacket {
 
     fn calculate(&self) -> i64 {
         let values: Vec<i64> = if self.b_packets.is_some() {
-            self.b_packets.as_ref().unwrap().iter().map(|p| p.calculate()).collect()
+            self.b_packets
+                .as_ref()
+                .unwrap()
+                .iter()
+                .map(|p| p.calculate())
+                .collect()
         } else {
             vec![]
         };
@@ -165,7 +169,12 @@ fn read_num_bytes(source: &str, i: &mut usize, b_version: usize, b_type: PacketT
     }
 }
 
-fn read_num_subpackets(source: &str, i: &mut usize, b_version: usize, b_type: PacketType) -> BitsPacket {
+fn read_num_subpackets(
+    source: &str,
+    i: &mut usize,
+    b_version: usize,
+    b_type: PacketType,
+) -> BitsPacket {
     let num_packets = read_num_packets(source, i);
     let mut packets = Vec::with_capacity(num_packets);
 
