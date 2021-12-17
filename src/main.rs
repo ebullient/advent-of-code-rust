@@ -5,6 +5,8 @@ mod puzzles_2021;
 
 #[macro_use]
 extern crate lazy_static;
+
+#[macro_use]
 extern crate num_derive;
 
 extern crate getopts;
