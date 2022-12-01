@@ -1,0 +1,19 @@
+use crate::puzzle_input;
+
+pub fn run() {
+    let input: Vec<String> = puzzle_input::read_all_lines("./input/2022-d*-input.txt");
+
+    println!("** Part 1 Final: {:?}", 0);
+    println!("** Part 2 Final: {:?}", 0);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test() {
+        let input: Vec<String> = puzzle_input::split_string("");
+
+    }
+}
