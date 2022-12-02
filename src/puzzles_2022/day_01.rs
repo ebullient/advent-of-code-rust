@@ -38,7 +38,6 @@ fn count_calories(input: &[String]) -> (i32, i32, i32) {
     (m1, m2, m3)
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -60,9 +59,10 @@ mod tests {
             9000
 
             10000
-            "   .split('\n')
-                .map(|x| x.trim().to_string())
-                .collect();
+            "
+        .split('\n')
+        .map(|x| x.trim().to_string())
+        .collect();
 
         let (m1, m2, m3) = count_calories(&input);
         assert_eq!(m1, 24000);
