@@ -1,7 +1,6 @@
-use crate::puzzle_input;
 use itertools::Itertools;
-use std::collections::VecDeque;
 
+use crate::puzzle_input;
 pub fn run() {
     let input: String = puzzle_input::read_string("./input/2022-d06-input.txt");
 
@@ -10,21 +9,14 @@ pub fn run() {
 }
 
 fn find(input: &str, how_many: usize) -> usize {
-    let mut i: usize = 1;
-    let mut marker: VecDeque<char> = VecDeque::with_capacity(5);
-
-    for c in input.chars() {
-        marker.push_back(c);
-        if i >= how_many {
-            if marker.iter().unique().count() == how_many {
-                println!("{:?}: Found marker {:?}", i, marker.iter().join(""));
-                return i;
-            }
-            marker.pop_front();
+    let mut i = how_many;
+    for w in input.as_bytes().windows(how_many) {
+        if w.iter().unique().count() == how_many {
+            println!("{:?}: Found marker {:?}", i, w.iter().join(""));
+            return i;
         }
         i += 1;
     }
-
     panic!("Marker not found");
 }
 
