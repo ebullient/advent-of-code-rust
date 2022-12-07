@@ -1,54 +1,26 @@
-use itertools::Itertools;
-
 use crate::puzzle_input;
-use std::collections::{HashMap, VecDeque};
+use itertools::Itertools;
+use std::collections::VecDeque;
 
 pub fn run() {
     let input: String = puzzle_input::read_string("./input/2022-d06-input.txt");
 
-    println!("** Part 1 Final: {:?}", find_marker(&input.as_str()));
-    println!("** Part 2 Final: {:?}", find_message(&input.as_str()));
+    println!("** Part 1 Final: {:?}", find(&input.as_str(), 4));
+    println!("** Part 2 Final: {:?}", find(&input.as_str(), 14));
 }
 
-fn find_marker(input: &str) -> usize {
+fn find(input: &str, how_many: usize) -> usize {
     let mut i: usize = 1;
     let mut marker: VecDeque<char> = VecDeque::with_capacity(5);
-    let mut letters: HashMap<char, usize> = HashMap::with_capacity(26);
 
     for c in input.chars() {
-        // println!("{:?}: {:?} ... {:?}", i, c, letters);
         marker.push_back(c);
-        letters.entry(c).and_modify(|i| *i += 1).or_insert(1);
-        if i >= 4 {
-            if letters.values().all(|&x| x < 2) {
+        if i >= how_many {
+            if marker.iter().unique().count() == how_many {
                 println!("{:?}: Found marker {:?}", i, marker.iter().join(""));
                 return i;
             }
-            let front = marker.pop_front().unwrap();
-            letters.entry(front).and_modify(|i| *i -= 1);
-        }
-        i += 1;
-    }
-
-    panic!("Marker not found");
-}
-
-fn find_message(input: &str) -> usize {
-    let mut i: usize = 1;
-    let mut marker: VecDeque<char> = VecDeque::with_capacity(15);
-    let mut letters: HashMap<char, usize> = HashMap::with_capacity(26);
-
-    for c in input.chars() {
-        println!("{:?}: {:?} ... {:?}", i, c, letters);
-        marker.push_back(c);
-        letters.entry(c).and_modify(|i| *i += 1).or_insert(1);
-        if i >= 14 {
-            if letters.values().all(|&x| x < 2) {
-                println!("{:?}: Found message {:?}", i, marker.iter().join(""));
-                return i;
-            }
-            let front = marker.pop_front().unwrap();
-            letters.entry(front).and_modify(|i| *i -= 1);
+            marker.pop_front();
         }
         i += 1;
     }
@@ -62,16 +34,16 @@ mod tests {
 
     #[test]
     fn test() {
-        assert_eq!(find_marker("mjqjpqmgbljsphdztnvjfqwrcgsmlb"), 7);
-        assert_eq!(find_marker("bvwbjplbgvbhsrlpgdmjqwftvncz"), 5);
-        assert_eq!(find_marker("nppdvjthqldpwncqszvftbrmjlhg"), 6);
-        assert_eq!(find_marker("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg"), 10);
-        assert_eq!(find_marker("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw"), 11);
+        assert_eq!(find("mjqjpqmgbljsphdztnvjfqwrcgsmlb", 4), 7);
+        assert_eq!(find("bvwbjplbgvbhsrlpgdmjqwftvncz", 4), 5);
+        assert_eq!(find("nppdvjthqldpwncqszvftbrmjlhg", 4), 6);
+        assert_eq!(find("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg", 4), 10);
+        assert_eq!(find("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw", 4), 11);
 
-        assert_eq!(find_message("mjqjpqmgbljsphdztnvjfqwrcgsmlb"), 19);
-        assert_eq!(find_message("bvwbjplbgvbhsrlpgdmjqwftvncz"), 23);
-        assert_eq!(find_message("nppdvjthqldpwncqszvftbrmjlhg"), 23);
-        assert_eq!(find_message("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg"), 29);
-        assert_eq!(find_message("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw"), 26);
+        assert_eq!(find("mjqjpqmgbljsphdztnvjfqwrcgsmlb", 14), 19);
+        assert_eq!(find("bvwbjplbgvbhsrlpgdmjqwftvncz", 14), 23);
+        assert_eq!(find("nppdvjthqldpwncqszvftbrmjlhg", 14), 23);
+        assert_eq!(find("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg", 14), 29);
+        assert_eq!(find("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw", 14), 26);
     }
 }
