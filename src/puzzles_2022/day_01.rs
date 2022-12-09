@@ -45,7 +45,8 @@ mod tests {
     #[test]
     fn test() {
         // Each Elf separates their own inventory from the previous Elf's inventory (if any) by a blank line.
-        let input: Vec<String> = "1000
+        let input: Vec<String> = puzzle_input::split_string(
+            "1000
             2000
             3000
 
@@ -59,10 +60,8 @@ mod tests {
             9000
 
             10000
-            "
-        .split('\n')
-        .map(|x| x.trim().to_string())
-        .collect();
+            ",
+        );
 
         let (m1, m2, m3) = count_calories(&input);
         assert_eq!(m1, 24000);

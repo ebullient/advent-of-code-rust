@@ -75,15 +75,14 @@ mod tests {
 
     #[test]
     fn test() {
-        let input: Vec<String> = "2-4,6-8
+        let input: Vec<String> = puzzle_input::split_string(
+            "2-4,6-8
         2-3,4-5
         5-7,7-9
         2-8,3-7
         6-6,4-6
-        2-6,4-8"
-            .split('\n')
-            .map(|x| x.trim().to_string())
-            .collect();
+        2-6,4-8",
+        );
 
         let (contains, overlaps) = eval_assignments(&input);
         assert_eq!(contains, 2);

@@ -111,13 +111,12 @@ mod tests {
 
     #[test]
     fn test() {
-        let input: Vec<String> = "A Y
+        let input: Vec<String> = puzzle_input::split_string(
+            "A Y
         B X
         C Z
-        "
-        .split('\n')
-        .map(|x| x.trim().to_string())
-        .collect();
+        ",
+        );
 
         assert_eq!(score_round(Shape::Rock, Shape::Paper), 8);
         assert_eq!(score_round(Shape::Paper, Shape::Rock), 1);

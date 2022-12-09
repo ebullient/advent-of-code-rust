@@ -186,7 +186,8 @@ mod tests {
 
     #[test]
     fn test() {
-        let input: Vec<String> = r#"
+        let input: Vec<String> = puzzle_input::split_string(
+            r#"
         $ cd /
         $ ls
         dir a
@@ -210,10 +211,8 @@ mod tests {
         8033020 d.log
         5626152 d.ext
         7214296 k
-            "#
-        .split('\n')
-        .map(|x| x.trim().to_string())
-        .collect();
+            "#,
+        );
 
         let tree = dir_tree(&input);
         tree.dump();

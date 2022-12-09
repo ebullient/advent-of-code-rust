@@ -93,15 +93,14 @@ mod tests {
 
     #[test]
     fn test() {
-        let input: Vec<String> = "vJrwpWtwJgWrhcsFMMfFFhFp
+        let input: Vec<String> = puzzle_input::split_string(
+            "vJrwpWtwJgWrhcsFMMfFFhFp
             jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
             PmmdzqPrVvPwwTWBwg
             wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
             ttgJtRGJQctTZtZT
-            CrZsJsPPZsGzwwsLwLmpwMDw"
-            .split('\n')
-            .map(|x| x.trim().to_string())
-            .collect();
+            CrZsJsPPZsGzwwsLwLmpwMDw",
+        );
 
         assert_eq!(examine_backpacks(&input), 157);
         assert_eq!(examine_team_backpacks(&input), 70);
