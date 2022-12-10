@@ -18,6 +18,11 @@ struct Coord {
     x: i32,
     y: i32,
 }
+impl Coord {
+    fn new(x: i32, y: i32) -> Coord {
+        Coord { x, y }
+    }
+}
 impl ops::Add for Coord {
     type Output = Coord;
 
@@ -50,10 +55,10 @@ struct Grid {
 impl Grid {
     fn new(len: usize) -> Grid {
         let mut data = HashSet::new();
-        data.insert(Coord { x: 0, y: 0 });
+        data.insert(Coord::new(0, 0));
         Grid {
             data,
-            snake: vec![Coord { x: 0, y: 0 }; len],
+            snake: vec![Coord::new(0, 0); len],
             len,
         }
     }
@@ -114,9 +119,9 @@ impl Grid {
 
     #[allow(dead_code)]
     fn reset(&mut self) {
-        self.snake = vec![Coord { x: 0, y: 0 }; self.len];
+        self.snake = vec![Coord::new(0, 0); self.len];
         self.data.clear();
-        self.data.insert(Coord { x: 0, y: 0 });
+        self.data.insert(Coord::new(0, 0));
     }
 }
 
@@ -160,36 +165,36 @@ mod tests {
         let mut grid = Grid::new(2);
 
         grid.step('R', 4);
-        assert_eq!(grid.snake[0], Coord { x: 4, y: 0 });
-        assert_eq!(grid.snake[1], Coord { x: 3, y: 0 });
+        assert_eq!(grid.snake[0], Coord::new(4, 0));
+        assert_eq!(grid.snake[1], Coord::new(3, 0));
 
         grid.step('U', 4);
-        assert_eq!(grid.snake[0], Coord { x: 4, y: 4 });
-        assert_eq!(grid.snake[1], Coord { x: 4, y: 3 });
+        assert_eq!(grid.snake[0], Coord::new(4, 4));
+        assert_eq!(grid.snake[1], Coord::new(4, 3));
 
         grid.step('L', 3);
-        assert_eq!(grid.snake[0], Coord { x: 1, y: 4 });
-        assert_eq!(grid.snake[1], Coord { x: 2, y: 4 });
+        assert_eq!(grid.snake[0], Coord::new(1, 4));
+        assert_eq!(grid.snake[1], Coord::new(2, 4));
 
         grid.step('D', 1);
-        assert_eq!(grid.snake[0], Coord { x: 1, y: 3 });
-        assert_eq!(grid.snake[1], Coord { x: 2, y: 4 });
+        assert_eq!(grid.snake[0], Coord::new(1, 3));
+        assert_eq!(grid.snake[1], Coord::new(2, 4));
 
         grid.step('R', 4);
-        assert_eq!(grid.snake[0], Coord { x: 5, y: 3 });
-        assert_eq!(grid.snake[1], Coord { x: 4, y: 3 });
+        assert_eq!(grid.snake[0], Coord::new(5, 3));
+        assert_eq!(grid.snake[1], Coord::new(4, 3));
 
         grid.step('D', 1);
-        assert_eq!(grid.snake[0], Coord { x: 5, y: 2 });
-        assert_eq!(grid.snake[1], Coord { x: 4, y: 3 });
+        assert_eq!(grid.snake[0], Coord::new(5, 2));
+        assert_eq!(grid.snake[1], Coord::new(4, 3));
 
         grid.step('L', 5);
-        assert_eq!(grid.snake[0], Coord { x: 0, y: 2 });
-        assert_eq!(grid.snake[1], Coord { x: 1, y: 2 });
+        assert_eq!(grid.snake[0], Coord::new(0, 2));
+        assert_eq!(grid.snake[1], Coord::new(1, 2));
 
         grid.step('R', 2);
-        assert_eq!(grid.snake[0], Coord { x: 2, y: 2 });
-        assert_eq!(grid.snake[1], Coord { x: 1, y: 2 });
+        assert_eq!(grid.snake[0], Coord::new(2, 2));
+        assert_eq!(grid.snake[1], Coord::new(1, 2));
 
         assert_eq!(grid.data.len(), 13);
         grid.reset();
@@ -213,52 +218,52 @@ mod tests {
         let mut grid = Grid::new(10);
 
         grid.step('R', 4);
-        assert_eq!(grid.snake[0], Coord { x: 4, y: 0 });
-        assert_eq!(grid.snake[1], Coord { x: 3, y: 0 });
-        assert_eq!(grid.snake[3], Coord { x: 1, y: 0 });
-        assert_eq!(grid.snake[9], Coord { x: 0, y: 0 });
+        assert_eq!(grid.snake[0], Coord::new(4, 0));
+        assert_eq!(grid.snake[1], Coord::new(3, 0));
+        assert_eq!(grid.snake[3], Coord::new(1, 0));
+        assert_eq!(grid.snake[9], Coord::new(0, 0));
 
         grid.step('U', 4);
-        assert_eq!(grid.snake[0], Coord { x: 4, y: 4 });
-        assert_eq!(grid.snake[1], Coord { x: 4, y: 3 });
-        assert_eq!(grid.snake[3], Coord { x: 3, y: 2 });
-        assert_eq!(grid.snake[9], Coord { x: 0, y: 0 });
+        assert_eq!(grid.snake[0], Coord::new(4, 4));
+        assert_eq!(grid.snake[1], Coord::new(4, 3));
+        assert_eq!(grid.snake[3], Coord::new(3, 2));
+        assert_eq!(grid.snake[9], Coord::new(0, 0));
 
         grid.step('L', 3);
-        assert_eq!(grid.snake[0], Coord { x: 1, y: 4 });
-        assert_eq!(grid.snake[1], Coord { x: 2, y: 4 });
-        assert_eq!(grid.snake[3], Coord { x: 3, y: 2 });
-        assert_eq!(grid.snake[9], Coord { x: 0, y: 0 });
+        assert_eq!(grid.snake[0], Coord::new(1, 4));
+        assert_eq!(grid.snake[1], Coord::new(2, 4));
+        assert_eq!(grid.snake[3], Coord::new(3, 2));
+        assert_eq!(grid.snake[9], Coord::new(0, 0));
 
         grid.step('D', 1);
-        assert_eq!(grid.snake[0], Coord { x: 1, y: 3 });
-        assert_eq!(grid.snake[1], Coord { x: 2, y: 4 });
-        assert_eq!(grid.snake[3], Coord { x: 3, y: 2 });
-        assert_eq!(grid.snake[9], Coord { x: 0, y: 0 });
+        assert_eq!(grid.snake[0], Coord::new(1, 3));
+        assert_eq!(grid.snake[1], Coord::new(2, 4));
+        assert_eq!(grid.snake[3], Coord::new(3, 2));
+        assert_eq!(grid.snake[9], Coord::new(0, 0));
 
         grid.step('R', 4);
-        assert_eq!(grid.snake[0], Coord { x: 5, y: 3 });
-        assert_eq!(grid.snake[1], Coord { x: 4, y: 3 });
-        assert_eq!(grid.snake[3], Coord { x: 3, y: 2 });
-        assert_eq!(grid.snake[9], Coord { x: 0, y: 0 });
+        assert_eq!(grid.snake[0], Coord::new(5, 3));
+        assert_eq!(grid.snake[1], Coord::new(4, 3));
+        assert_eq!(grid.snake[3], Coord::new(3, 2));
+        assert_eq!(grid.snake[9], Coord::new(0, 0));
 
         grid.step('D', 1);
-        assert_eq!(grid.snake[0], Coord { x: 5, y: 2 });
-        assert_eq!(grid.snake[1], Coord { x: 4, y: 3 });
-        assert_eq!(grid.snake[3], Coord { x: 3, y: 2 });
-        assert_eq!(grid.snake[9], Coord { x: 0, y: 0 });
+        assert_eq!(grid.snake[0], Coord::new(5, 2));
+        assert_eq!(grid.snake[1], Coord::new(4, 3));
+        assert_eq!(grid.snake[3], Coord::new(3, 2));
+        assert_eq!(grid.snake[9], Coord::new(0, 0));
 
         grid.step('L', 5);
-        assert_eq!(grid.snake[0], Coord { x: 0, y: 2 });
-        assert_eq!(grid.snake[1], Coord { x: 1, y: 2 });
-        assert_eq!(grid.snake[3], Coord { x: 3, y: 2 });
-        assert_eq!(grid.snake[9], Coord { x: 0, y: 0 });
+        assert_eq!(grid.snake[0], Coord::new(0, 2));
+        assert_eq!(grid.snake[1], Coord::new(1, 2));
+        assert_eq!(grid.snake[3], Coord::new(3, 2));
+        assert_eq!(grid.snake[9], Coord::new(0, 0));
 
         grid.step('R', 2);
-        assert_eq!(grid.snake[0], Coord { x: 2, y: 2 });
-        assert_eq!(grid.snake[1], Coord { x: 1, y: 2 });
-        assert_eq!(grid.snake[3], Coord { x: 3, y: 2 });
-        assert_eq!(grid.snake[9], Coord { x: 0, y: 0 });
+        assert_eq!(grid.snake[0], Coord::new(2, 2));
+        assert_eq!(grid.snake[1], Coord::new(1, 2));
+        assert_eq!(grid.snake[3], Coord::new(3, 2));
+        assert_eq!(grid.snake[9], Coord::new(0, 0));
 
         assert_eq!(grid.data.len(), 1);
         grid.reset();
