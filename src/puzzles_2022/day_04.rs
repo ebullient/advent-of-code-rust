@@ -14,7 +14,6 @@ fn get_ranges(s: &str) -> (RangeInclusive<i32>, RangeInclusive<i32>) {
         .split(&['-', ','][..])
         .map(|x| x.parse::<i32>().unwrap())
         .collect();
-
     (
         RangeInclusive::new(v[0], v[1]),
         RangeInclusive::new(v[2], v[3]),
@@ -22,25 +21,15 @@ fn get_ranges(s: &str) -> (RangeInclusive<i32>, RangeInclusive<i32>) {
 }
 
 fn range_contains(r1: &RangeInclusive<i32>, r2: &RangeInclusive<i32>) -> bool {
-    if (r1.contains(&r2.start()) && r1.contains(&r2.end()))
+    (r1.contains(&r2.start()) && r1.contains(&r2.end()))
         || (r2.contains(&r1.start()) && r2.contains(&r1.end()))
-    {
-        return true;
-    }
-
-    false
 }
 
 fn range_overlaps(r1: &RangeInclusive<i32>, r2: &RangeInclusive<i32>) -> bool {
-    if r1.contains(&r2.start())
+    r1.contains(&r2.start())
         || r1.contains(&r2.end())
         || r2.contains(&r1.start())
         || r2.contains(&r1.end())
-    {
-        return true;
-    }
-
-    false
 }
 
 fn eval_assignments(input: &[String]) -> (i32, i32) {
@@ -51,19 +40,13 @@ fn eval_assignments(input: &[String]) -> (i32, i32) {
         if line.is_empty() {
             continue;
         }
-
         let (r1, r2) = get_ranges(&line);
-
-        let rc = range_contains(&r1, &r2);
-        if rc {
+        if range_contains(&r1, &r2) {
             contains += 1;
         }
-
-        let ro = range_overlaps(&r1, &r2);
-        if ro {
+        if range_overlaps(&r1, &r2) {
             overlaps += 1;
         }
-        println!("{:?} -> {:?} {:?}", line, rc, ro);
     }
 
     (contains, overlaps)
