@@ -9,7 +9,7 @@ pub fn run() {
     grid.dump();
 
     println!("** Part 1 Final: {:?}", grid.find_path());
-    //println!("** Part 2 Final: {:?}", 0);
+    println!("** Part 2 Final: {:?}", grid.find_all_paths());
 }
 
 // elevation of each square of the grid is given by a single lowercase letter:
@@ -40,6 +40,7 @@ impl Grid {
                 let here = (y as i32, x as i32);
                 if c == 'S' {
                     start = here;
+                    data.insert(start, 'a'); // start is like an 'a'
                 } else if c == 'E' {
                     end = here;
                 } else {
@@ -50,7 +51,6 @@ impl Grid {
                 }
             }
         }
-        data.insert(start, '`');
         data.insert(end, char::from_u32(max as u32 + 1).unwrap());
 
         Grid {
@@ -87,11 +87,11 @@ impl Grid {
         result
     }
 
-    fn find_path(&self) -> usize {
+    fn bfs(&self, start: (i32, i32)) -> usize {
         let mut queue: VecDeque<((i32, i32), String)> = VecDeque::new();
         let mut seen: HashSet<(i32, i32)> = HashSet::new();
 
-        queue.push_back((self.start, String::from("S")));
+        queue.push_back((start, String::from(self.value(start))));
 
         while let Some(current) = queue.pop_front() {
             if current.0 == self.end {
@@ -100,13 +100,13 @@ impl Grid {
             }
             if seen.insert(current.0) {
                 let a = self.altitude(current.0);
-                println!(
-                    "Looking at {:?}: {:?} == {:?} :: {:?}",
-                    current.0,
-                    self.value(current.0),
-                    a,
-                    &current.1
-                );
+                // println!(
+                //     "Looking at {:?}: {:?} == {:?} :: {:?}",
+                //     current.0,
+                //     self.value(current.0),
+                //     a,
+                //     &current.1
+                // );
                 self.neighbors(current.0)
                     .iter()
                     .filter(|n| self.altitude(**n) - a <= 1)
@@ -116,6 +116,20 @@ impl Grid {
             }
         }
         0
+    }
+
+    fn find_path(&self) -> usize {
+        self.bfs(self.start)
+    }
+
+    fn find_all_paths(&self) -> usize {
+        self.data
+            .iter()
+            .filter(|x| *x.1 == 'a')
+            .map(|x| self.bfs(*x.0))
+            .filter(|x| *x != 0)
+            .min()
+            .unwrap()
     }
 
     #[allow(dead_code)]
@@ -147,5 +161,6 @@ mod tests {
         grid.dump();
 
         assert_eq!(grid.find_path(), 31);
+        assert_eq!(grid.find_all_paths(), 29);
     }
 }
