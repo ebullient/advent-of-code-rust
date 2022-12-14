@@ -129,7 +129,10 @@ mod tests {
         let parsed: Vec<(Option<char>, Option<Vec<char>>)> =
             input.iter().map(|x| parse(x)).collect();
 
-        assert_eq!(26397, parsed.iter().map(|x| corrupted_score(x.0)).sum());
+        assert_eq!(
+            26397,
+            parsed.iter().map(|x| corrupted_score(x.0)).sum::<i32>()
+        );
 
         let mut scores: Vec<i64> = parsed
             .iter()
