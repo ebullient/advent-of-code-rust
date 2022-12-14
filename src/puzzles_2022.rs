@@ -12,7 +12,7 @@ mod day_11;
 mod day_12;
 mod day_13;
 mod day_13_2;
-//mod day_14;
+mod day_14;
 
 pub fn run(day: i32) {
     match day {
@@ -31,8 +31,8 @@ pub fn run(day: i32) {
         13 => {
             day_13::run();
             day_13_2::run();
-        },
-        //14 => day_14::run(),
+        }
+        14 => day_14::run(),
 
         // Handle the rest of cases
         _ => println!("Nothing to see here"),
