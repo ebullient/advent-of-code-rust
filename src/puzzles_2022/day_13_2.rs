@@ -1,5 +1,4 @@
 use crate::puzzle_input;
-use serde_json::Value;
 use std::cmp::Ordering;
 
 pub fn run() {
@@ -10,48 +9,70 @@ pub fn run() {
     println!("** Part 2 Final: {:?}", decoder_key);
 }
 
-fn json_array(v: Value) -> Value {
-    let x = v.as_i64().unwrap();
-    serde_json::from_str(&format!("[{}]", x)).unwrap()
+#[derive(Debug, PartialEq)]
+enum Token {
+    ListStart,
+    ListEnd,
+    ListDelimit,
+    Digit,
+    EOL,
 }
 
-fn compare(left: &mut Vec<Value>, right: &mut Vec<Value>) -> Ordering {
-    let mut result = Ordering::Equal;
-    while result == Ordering::Equal {
-        if left.is_empty() && right.is_empty() {
-            break;
-        } else if left.is_empty() {
-            return Ordering::Less;
-        } else if right.is_empty() {
-            return Ordering::Greater;
+fn read(s: &mut String) -> (Token, i32) {
+    if s.is_empty() {
+        return (Token::EOL, -1);
+    }
+    let next = s.remove(0);
+    match next {
+        '[' => return (Token::ListStart, -1),
+        ']' => return (Token::ListEnd, -1),
+        ',' => return (Token::ListDelimit, -1),
+        _ => {} // continue
+    };
+
+    let mut str = String::from(next);
+    while let Some(x) = s.chars().next() {
+        if x.is_digit(10) {
+            str.push(s.remove(0));
+        } else {
+            return (Token::Digit, str.parse::<i32>().unwrap());
         }
+    }
+    (Token::EOL, -1)
+}
 
-        let mut l = left.remove(0);
-        let mut r = right.remove(0);
+fn compare(left: &mut String, right: &mut String) -> Ordering {
+    loop {
+        if left.is_empty() && right.is_empty() {
+            return Ordering::Equal;
+        }
+        let l = read(left);
+        let r = read(right);
 
-        if l.is_number() && r.is_number() {
-            let x = l.as_i64().unwrap();
-            let y = r.as_i64().unwrap();
-            if x != y {
-                result = if x < y {
+        if l.0 == r.0 {
+            // Tokens of the same type
+            if l.0 == Token::Digit && l.1 != r.1 {
+                return if l.1 < r.1 {
                     Ordering::Less
                 } else {
                     Ordering::Greater
-                };
+                }; // unequal digits
             }
-        } else if l.is_array() && r.is_array() {
-            let nested_l = l.as_array_mut().unwrap();
-            let nested_r = r.as_array_mut().unwrap();
-            result = compare(nested_l, nested_r);
-        } else if l.is_number() && r.is_array() {
-            left.insert(0, json_array(l));
-            right.insert(0, r); // put back
-        } else if l.is_array() && r.is_number() {
-            left.insert(0, l); // put back
-            right.insert(0, json_array(r));
+            // lots of carrying on as usual here: matching [ and ] and ,
+        } else if l.0 == Token::ListStart && r.0 == Token::Digit {
+            left.insert(0, '['); // back up
+            right.insert_str(0, &format!("[{}]", r.1));
+        } else if l.0 == Token::Digit && r.0 == Token::ListStart {
+            right.insert(0, '['); // back up
+            left.insert_str(0, &format!("[{}]", l.1));
+        } else if l.0 == Token::ListEnd {
+            return Ordering::Less;
+        } else if r.0 == Token::ListEnd {
+            return Ordering::Greater;
+        } else {
+            panic!("What lands here?")
         }
     }
-    result
 }
 
 fn iterate_sum(input: &[String]) -> i32 {
@@ -63,12 +84,7 @@ fn iterate_sum(input: &[String]) -> i32 {
         if line.is_empty() {
             continue;
         }
-        let mut l_value: Value = serde_json::from_str(&line).unwrap();
-        let mut r_value: Value = serde_json::from_str(&iter.next().unwrap()).unwrap();
-        let order = compare(
-            &mut l_value.as_array_mut().unwrap(),
-            &mut r_value.as_array_mut().unwrap(),
-        );
+        let order = compare(&mut line.to_string(), &mut iter.next().unwrap().to_string());
         if order == Ordering::Less {
             result += i;
         }
@@ -83,14 +99,7 @@ fn sort(input: &[String]) -> (Vec<String>, i32) {
     all.push(String::from("[[2]]"));
     all.push(String::from("[[6]]"));
 
-    all.sort_by(|a, b| {
-        let mut l_value: Value = serde_json::from_str(&a).unwrap();
-        let mut r_value: Value = serde_json::from_str(&b).unwrap();
-        compare(
-            &mut l_value.as_array_mut().unwrap(),
-            &mut r_value.as_array_mut().unwrap(),
-        )
-    });
+    all.sort_by(|a, b| compare(&mut a.to_string(), &mut b.to_string()));
 
     let decoder_key = all
         .iter()
@@ -108,12 +117,9 @@ mod tests {
     use std::cmp::Ordering;
 
     fn test_in_order(left: &str, right: &str) -> bool {
-        let mut l_value: Value = serde_json::from_str(&left).unwrap();
-        let mut r_value: Value = serde_json::from_str(&right).unwrap();
-        let order = compare(
-            &mut l_value.as_array_mut().unwrap(),
-            &mut r_value.as_array_mut().unwrap(),
-        );
+        let mut l_value = left.to_string();
+        let mut r_value = right.to_string();
+        let order = compare(&mut l_value, &mut r_value);
         order == Ordering::Less
     }
 
